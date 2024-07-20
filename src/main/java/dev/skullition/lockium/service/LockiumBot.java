@@ -1,5 +1,6 @@
 package dev.skullition.lockium.service;
 
+import dev.skullition.lockium.config.SecretsConfig;
 import io.github.freya022.botcommands.api.core.JDAService;
 import io.github.freya022.botcommands.api.core.events.BReadyEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
@@ -14,6 +15,11 @@ import java.util.Set;
 
 @BService
 public class LockiumBot extends JDAService {
+    private final SecretsConfig secretsConfig;
+
+    public LockiumBot(SecretsConfig secretsConfig) {
+        this.secretsConfig = secretsConfig;
+    }
 
     @NotNull
     @Override
@@ -29,7 +35,7 @@ public class LockiumBot extends JDAService {
 
     @Override
     public void createJDA(@NotNull BReadyEvent bReadyEvent, @NotNull IEventManager iEventManager) {
-        JDABuilder.createDefault("token", getIntents())
+        JDABuilder.createDefault(secretsConfig.token(), getIntents())
                 .enableCache(getCacheFlags())
                 .setActivity(Activity.customStatus("Hello there! :)"))
                 .setEventManager(iEventManager)

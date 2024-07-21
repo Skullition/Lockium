@@ -1,0 +1,119 @@
+{
+  "groups" : [ ],
+  "properties" : [ {
+    "name" : "botcommands.components.slashGuildIds",
+    "type" : "java.util.List",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
+  }, {
+    "name" : "botcommands.components.testGuildIds",
+    "type" : "java.util.List",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
+  }, {
+    "name" : "botcommands.components.disableAutocompleteCache",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
+  }, {
+    "name" : "botcommands.components.onlineAppCommandCheckEnabled",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
+  }, {
+    "name" : "botcommands.components.forceGuildCommands",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
+  }, {
+    "name" : "botcommands.components.localizations",
+    "type" : "java.util.Map",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
+  }, {
+    "name" : "botcommands.components.enable",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BComponentsConfig"
+  }, {
+    "name" : "botcommands.core.predefinedOwnerIds",
+    "type" : "java.util.Set",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
+  }, {
+    "name" : "botcommands.core.packages",
+    "type" : "java.util.Set",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
+  }, {
+    "name" : "botcommands.core.classes",
+    "type" : "java.util.Set",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
+  }, {
+    "name" : "botcommands.core.disableExceptionsInDMs",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
+  }, {
+    "name" : "botcommands.core.ignoredIntents",
+    "type" : "java.util.Set",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
+  }, {
+    "name" : "botcommands.core.ignoredEventIntents",
+    "type" : "java.util.Set",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
+  }, {
+    "name" : "botcommands.database.dumpLongTransactions",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDatabaseConfig"
+  }, {
+    "name" : "botcommands.database.logQueries",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDatabaseConfig"
+  }, {
+    "name" : "botcommands.database.logQueryParameters",
+    "defaultValue" : "true",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDatabaseConfig"
+  }, {
+    "name" : "botcommands.database.queryLogThresholdMillis",
+    "type" : "java.time.Duration",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDatabaseConfig"
+  }, {
+    "name" : "botcommands.debug.enableApplicationDiffsLogs",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDebugConfig"
+  }, {
+    "name" : "botcommands.debug.enabledMissingLocalizationLogs",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDebugConfig"
+  }, {
+    "name" : "botcommands.localization.responseBundles",
+    "type" : "java.util.Set",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BLocalizationConfig"
+  }, {
+    "name" : "botcommands.text.usePingAsPrefix",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
+  }, {
+    "name" : "botcommands.text.prefixes",
+    "type" : "java.util.List",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
+  }, {
+    "name" : "botcommands.text.isHelpDisabled",
+    "defaultValue" : "false",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
+  }, {
+    "name" : "botcommands.text.showSuggestions",
+    "defaultValue" : "true",
+    "type" : "java.lang.Boolean",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
+  }, {
+    "name" : "botcommands.text.dmClosedEmoji",
+    "defaultValue" : "mailbox_closed",
+    "type" : "net.dv8tion.jda.api.entities.emoji.Emoji",
+    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
+  } ],
+  "hints" : [ ]
+}

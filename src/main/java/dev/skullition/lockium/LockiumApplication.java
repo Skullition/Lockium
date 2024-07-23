@@ -1,5 +1,6 @@
 package dev.skullition.lockium;
 
+import dev.skullition.lockium.annotation.EnableLockiumBot;
 import dev.skullition.lockium.config.SecretsConfig;
 import io.github.freya022.botcommands.api.core.annotations.EnableBotCommands;
 import org.springframework.boot.SpringApplication;

@@ -1,4 +1,4 @@
-package dev.skullition.lockium.config;
+package dev.skullition.lockium.service;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier;

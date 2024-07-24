@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @EnableLockiumBot
 @SpringBootApplication
-@EnableBotCommands
 @EnableConfigurationProperties(SecretsConfig.class)
 public class LockiumApplication {
 

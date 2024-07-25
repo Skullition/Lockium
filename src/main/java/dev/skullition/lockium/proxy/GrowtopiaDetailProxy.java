@@ -18,12 +18,11 @@ public class GrowtopiaDetailProxy {
         try {
             String body = Jsoup.connect(GROWTOPIA_DETAIL_URL).get().body().text();
 
-            String usersOnlineString = body.substring(body.indexOf("_user\":\"") + 8, body.indexOf("\",\"world"));
-            int usersOnline = Integer.parseInt(usersOnlineString);
+            String usersOnline = body.substring(body.indexOf("_user\":\"") + 8, body.indexOf("\",\"world"));
 
             String wotdName = body.substring(body.indexOf("worlds") + 8, body.indexOf(".png")).toUpperCase();
 
-            logger.debug("Fetching Growtopia Detail with online users: {} and wotdName: {}", usersOnlineString, wotdName);
+            logger.debug("Fetching Growtopia Detail with online users: {} and wotdName: {}", usersOnline, wotdName);
             return Optional.of(new GrowtopiaDetail(usersOnline, wotdName));
         } catch (IOException e) {
             return Optional.empty();

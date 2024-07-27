@@ -4,6 +4,7 @@ import dev.skullition.lockium.model.GrowtopiaDetail;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -11,8 +12,9 @@ import java.util.Optional;
 
 @Service
 public class GrowtopiaDetailProxy {
-    private static final String GROWTOPIA_DETAIL_URL = "https://www.growtopiagame.com/detail";
     private static final Logger logger = LoggerFactory.getLogger(GrowtopiaDetailProxy.class);
+    @Value("${growtopia.detail-url}")
+    private static String GROWTOPIA_DETAIL_URL;
 
     public Optional<GrowtopiaDetail> getGrowtopiaDetail() {
         try {

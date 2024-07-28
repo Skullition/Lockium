@@ -1,6 +1,8 @@
 package dev.skullition.lockium.proxy;
 
+import dev.skullition.lockium.model.GrowtopiaItem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,20 +16,26 @@ import java.util.Optional;
 public class GrowtopiaWikiProxy {
     @Value("${growtopia.wiki-url}")
     private String wikiUrl;
+    private static final int MAX_RARITY = 999;
 
-    public Optional<String> getItemData(@NotNull String itemName) {
+    public Optional<GrowtopiaItem> getItemData(@NotNull String itemName) {
         String resolvedItemName = getWikiItemName(itemName);
+        String itemWikiUrl = wikiUrl + resolvedItemName;
         Document document;
         try {
-            document = Jsoup.connect(wikiUrl + resolvedItemName).get();
+            document = Jsoup.connect(itemWikiUrl).get();
         } catch (IOException e) {
             return Optional.empty();
         }
-        Element spriteElement = document.select(".item-card .card-header img").first();
-        if (spriteElement == null) {
-            return Optional.empty();
-        }
-        String spriteUrl = spriteElement.attr("src");
+        Element spriteElement = document.selectFirst(".item-card .card-header img");
+        @Nullable String spriteUrl = spriteElement == null ? "This item does not have a link." : spriteElement.attr("src");
+
+        Element rarityElement = document.selectFirst("div.card-header small");
+        int rarity = rarityElement == null ? MAX_RARITY : Integer.parseInt(rarityElement.text().replaceAll("(Rarity: )|\\D+", ""));
+
+        Element descriptionElement = document.selectFirst("div.card-text");
+        String description = descriptionElement == null ? "*This item has no description.*" : descriptionElement.text();
+        return Optional.of(new GrowtopiaItem(spriteUrl, itemWikiUrl, rarity, description));
     }
 
     @NotNull

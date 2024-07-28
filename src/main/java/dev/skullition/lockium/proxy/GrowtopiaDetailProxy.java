@@ -14,20 +14,21 @@ import java.util.Optional;
 public class GrowtopiaDetailProxy {
     private static final Logger logger = LoggerFactory.getLogger(GrowtopiaDetailProxy.class);
     @Value("${growtopia.detail-url}")
-    private static String GROWTOPIA_DETAIL_URL;
+    private static String growtopiaDetailUrl;
 
     public Optional<GrowtopiaDetail> getGrowtopiaDetail() {
+        String body;
         try {
-            String body = Jsoup.connect(GROWTOPIA_DETAIL_URL).get().body().text();
-
-            String usersOnline = body.substring(body.indexOf("_user\":\"") + 8, body.indexOf("\",\"world"));
-
-            String wotdName = body.substring(body.indexOf("worlds") + 8, body.indexOf(".png")).toUpperCase();
-
-            logger.debug("Fetching Growtopia Detail with online users: {} and wotdName: {}", usersOnline, wotdName);
-            return Optional.of(new GrowtopiaDetail(usersOnline, wotdName));
+            body = Jsoup.connect(growtopiaDetailUrl).get().body().text();
         } catch (IOException e) {
             return Optional.empty();
         }
+
+        String usersOnline = body.substring(body.indexOf("_user\":\"") + 8, body.indexOf("\",\"world"));
+
+        String wotdName = body.substring(body.indexOf("worlds") + 8, body.indexOf(".png")).toUpperCase();
+
+        logger.debug("Fetching Growtopia Detail with online users: {} and wotdName: {}", usersOnline, wotdName);
+        return Optional.of(new GrowtopiaDetail(usersOnline, wotdName));
     }
 }

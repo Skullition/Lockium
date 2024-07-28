@@ -1,4 +1,6 @@
 package dev.skullition.lockium.model;
 
-public record GrowtopiaDetail(String onlineUsers, String wotdName) {
+import org.jetbrains.annotations.NotNull;
+
+public record GrowtopiaDetail(@NotNull String onlineUsers, @NotNull String wotdName) {
 }

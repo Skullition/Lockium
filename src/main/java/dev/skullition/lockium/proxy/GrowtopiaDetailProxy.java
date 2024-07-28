@@ -14,7 +14,7 @@ import java.util.Optional;
 public class GrowtopiaDetailProxy {
     private static final Logger logger = LoggerFactory.getLogger(GrowtopiaDetailProxy.class);
     @Value("${growtopia.detail-url}")
-    private static String growtopiaDetailUrl;
+    private String growtopiaDetailUrl;
 
     public Optional<GrowtopiaDetail> getGrowtopiaDetail() {
         String body;

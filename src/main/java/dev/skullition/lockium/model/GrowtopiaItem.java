@@ -6,6 +6,7 @@ public record GrowtopiaItem(
         @NotNull String spriteUrl,
         @NotNull String itemWikiUrl,
         int rarity,
-        @NotNull String description
+        @NotNull String description,
+        @NotNull String properties
 ) {
 }

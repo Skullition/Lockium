@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -33,14 +32,14 @@ public class SlashItem extends ApplicationCommand {
             return;
         }
         GrowtopiaItem item = result.get();
-        MessageEmbed embed = new EmbedBuilder()
+        EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setAuthor(itemName, item.itemWikiUrl())
                 .setTitle(item.itemWikiUrl())
                 .setThumbnail(item.spriteUrl())
                 .setDescription(item.description())
-                .addField("Rarity", String.valueOf(item.rarity()), false)
-                .build();
+                .addField("\uD83D\uDD27 Properties: ", item.properties(), false)
+                .addField("✨ Rarity:", String.valueOf(item.rarity()), false);
 
-        event.replyEmbeds(embed).queue();
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 }

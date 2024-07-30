@@ -7,6 +7,7 @@ public record GrowtopiaItem(
         @NotNull String itemWikiUrl,
         int rarity,
         @NotNull String description,
-        @NotNull String properties
+        @NotNull String properties,
+        @NotNull GrowtopiaItemField itemField
 ) {
 }

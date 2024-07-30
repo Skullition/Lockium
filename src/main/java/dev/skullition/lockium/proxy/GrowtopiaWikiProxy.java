@@ -1,6 +1,8 @@
 package dev.skullition.lockium.proxy;
 
+import dev.skullition.lockium.builder.GrowtopiaItemFieldBuilder;
 import dev.skullition.lockium.model.GrowtopiaItem;
+import dev.skullition.lockium.model.GrowtopiaItemField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
@@ -45,7 +47,42 @@ public class GrowtopiaWikiProxy {
 
         String properties = cardTextElements.get(1).wholeText();
 
-        return Optional.of(new GrowtopiaItem(spriteUrl, itemWikiUrl, rarity, description, properties));
+        Element cardFieldElement = document.selectFirst("table.card-field");
+        // this should never trigger
+        if (cardFieldElement == null) {
+            logger.error("No card field found in {}", itemName);
+            return Optional.empty();
+        }
+        Elements tableRows = cardFieldElement.getElementsByTag("tr");
+
+        var builder = new GrowtopiaItemFieldBuilder();
+        for (Element row : tableRows) {
+            Element cellHeader = row.selectFirst("th");
+            Element cellBody = row.selectFirst("td");
+            // this should also never trigger
+            if (cellHeader == null || cellBody == null) {
+                logger.error("Cell header is empty in {}, for row {}", itemName, row);
+                return Optional.empty();
+            }
+
+            switch (cellHeader.text()) {
+                case "Type" -> builder.setType(cellBody.text());
+                case "Chi" -> builder.setChi(cellBody.text());
+                case "Texture Type" -> builder.setTextureType(cellBody.text());
+                case "Collision Type" -> builder.setCollisionType(cellBody.text());
+                //TODO: parse hardness value
+                case "Hardness" -> builder.setHitsToBreak(cellBody.text());
+                case "Seed Color" -> builder.setSeedColor(cellBody.text());
+                case "Grow Time" -> builder.setGrowTime(cellBody.text());
+                case "Default Gems Drop" -> builder.setGems(cellBody.text());
+                default -> logger.error("Unknown cell header {}", cellHeader);
+            }
+        }
+        GrowtopiaItemField itemField = builder.build();
+        logger.debug("Item field for {} is {}", itemName, itemField);
+
+
+        return Optional.of(new GrowtopiaItem(spriteUrl, itemWikiUrl, rarity, description, properties, itemField));
     }
 
     @NotNull

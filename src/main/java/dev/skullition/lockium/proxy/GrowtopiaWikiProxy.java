@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -70,8 +72,7 @@ public class GrowtopiaWikiProxy {
                 case "Chi" -> builder.setChi(cellBody.text());
                 case "Texture Type" -> builder.setTextureType(cellBody.text());
                 case "Collision Type" -> builder.setCollisionType(cellBody.text());
-                //TODO: parse hardness value
-                case "Hardness" -> builder.setHitsToBreak(cellBody.text());
+                case "Hardness" -> builder.setHitsToBreak(resolveHitsToBreak(cellBody.text()));
                 case "Seed Color" -> builder.setSeedColor(cellBody.text());
                 case "Grow Time" -> builder.setGrowTime(cellBody.text());
                 case "Default Gems Drop" -> builder.setGems(cellBody.text());
@@ -88,5 +89,15 @@ public class GrowtopiaWikiProxy {
     @NotNull
     private String getWikiItemName(@NotNull String itemName) {
         return itemName.replaceAll(" ", "_");
+    }
+
+    private String resolveHitsToBreak(String hitsToBreak) {
+        List<String> hits = new ArrayList<>();
+        for (String string : hitsToBreak.split(" ")) {
+            if (string.matches("-?\\d+")) {
+                hits.add(string);
+            }
+        }
+        return "🤜 " + hits.get(0) + " Hits (⛏ " + hits.get(1) + " Hits)";
     }
 }

@@ -91,7 +91,8 @@ public class GrowtopiaWikiProxy {
         return itemName.replaceAll(" ", "_");
     }
 
-    private String resolveHitsToBreak(String hitsToBreak) {
+    @NotNull
+    private String resolveHitsToBreak(@NotNull String hitsToBreak) {
         List<String> hits = new ArrayList<>();
         for (String string : hitsToBreak.split(" ")) {
             if (string.matches("-?\\d+")) {

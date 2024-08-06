@@ -20,7 +20,7 @@ public class LockiumBot extends JDAService {
     private final SecretsConfig secretsConfig;
     private static final Logger logger = LoggerFactory.getLogger(LockiumBot.class);
 
-    public LockiumBot(SecretsConfig secretsConfig) {
+    public LockiumBot(@NotNull SecretsConfig secretsConfig) {
         this.secretsConfig = secretsConfig;
     }
 

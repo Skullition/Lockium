@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class DatabaseSource implements HikariSourceSupplier {
     private final HikariDataSource dataSource;
 
-    public DatabaseSource(HikariDataSource dataSource) {
+    public DatabaseSource(@NotNull HikariDataSource dataSource) {
         this.dataSource = dataSource;
     }
 

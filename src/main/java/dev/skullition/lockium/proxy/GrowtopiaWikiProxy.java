@@ -38,11 +38,11 @@ public class GrowtopiaWikiProxy {
     }
     Element spriteElement = document.selectFirst(".item-card .card-header img");
     @Nullable
-    String spriteUrl =
+    final String spriteUrl =
         spriteElement == null ? "https://growtopia.fandom.com" : spriteElement.attr("src");
 
     Element rarityElement = document.selectFirst("div.card-header small");
-    int rarity =
+    final int rarity =
         rarityElement == null
             ? MAX_RARITY
             : Integer.parseInt(rarityElement.text().replaceAll("(Rarity: )|\\D+", ""));
@@ -50,10 +50,10 @@ public class GrowtopiaWikiProxy {
     Elements cardTextElements = document.select("div.card-text");
 
     Element descriptionElement = cardTextElements.first();
-    String description =
+    final String description =
         descriptionElement == null ? "*This item has no description.*" : descriptionElement.text();
 
-    String properties = cardTextElements.get(1).wholeText();
+    final String properties = cardTextElements.get(1).wholeText();
 
     Element cardFieldElement = document.selectFirst("table.card-field");
     // this should never trigger

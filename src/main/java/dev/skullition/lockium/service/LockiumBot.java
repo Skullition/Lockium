@@ -49,12 +49,12 @@ public class LockiumBot extends JDAService {
   }
 
   @Override
-  public void createJDA(@NotNull BReadyEvent bReadyEvent, @NotNull IEventManager iEventManager) {
+  public void createJDA(@NotNull BReadyEvent readyEvent, @NotNull IEventManager eventManager) {
     logger.info("Creating JDA");
     JDABuilder.createDefault(secretsConfig.token(), getIntents())
         .enableCache(getCacheFlags())
         .setActivity(Activity.customStatus("Hello there! :)"))
-        .setEventManager(iEventManager)
+        .setEventManager(eventManager)
         .build();
     logger.info("JDA created");
   }

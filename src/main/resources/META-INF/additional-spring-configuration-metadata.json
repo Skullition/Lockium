@@ -1,119 +1,250 @@
 {
-  "groups" : [ ],
-  "properties" : [ {
-    "name" : "botcommands.components.slashGuildIds",
-    "type" : "java.util.List",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
-  }, {
-    "name" : "botcommands.components.testGuildIds",
-    "type" : "java.util.List",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
-  }, {
-    "name" : "botcommands.components.disableAutocompleteCache",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
-  }, {
-    "name" : "botcommands.components.onlineAppCommandCheckEnabled",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
-  }, {
-    "name" : "botcommands.components.forceGuildCommands",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
-  }, {
-    "name" : "botcommands.components.localizations",
-    "type" : "java.util.Map",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BApplicationConfig"
-  }, {
-    "name" : "botcommands.components.enable",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BComponentsConfig"
-  }, {
-    "name" : "botcommands.core.predefinedOwnerIds",
-    "type" : "java.util.Set",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
-  }, {
-    "name" : "botcommands.core.packages",
-    "type" : "java.util.Set",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
-  }, {
-    "name" : "botcommands.core.classes",
-    "type" : "java.util.Set",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
-  }, {
-    "name" : "botcommands.core.disableExceptionsInDMs",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
-  }, {
-    "name" : "botcommands.core.ignoredIntents",
-    "type" : "java.util.Set",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
-  }, {
-    "name" : "botcommands.core.ignoredEventIntents",
-    "type" : "java.util.Set",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BConfig"
-  }, {
-    "name" : "botcommands.database.dumpLongTransactions",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDatabaseConfig"
-  }, {
-    "name" : "botcommands.database.logQueries",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDatabaseConfig"
-  }, {
-    "name" : "botcommands.database.logQueryParameters",
-    "defaultValue" : "true",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDatabaseConfig"
-  }, {
-    "name" : "botcommands.database.queryLogThresholdMillis",
-    "type" : "java.time.Duration",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDatabaseConfig"
-  }, {
-    "name" : "botcommands.debug.enableApplicationDiffsLogs",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDebugConfig"
-  }, {
-    "name" : "botcommands.debug.enabledMissingLocalizationLogs",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BDebugConfig"
-  }, {
-    "name" : "botcommands.localization.responseBundles",
-    "type" : "java.util.Set",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BLocalizationConfig"
-  }, {
-    "name" : "botcommands.text.usePingAsPrefix",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
-  }, {
-    "name" : "botcommands.text.prefixes",
-    "type" : "java.util.List",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
-  }, {
-    "name" : "botcommands.text.isHelpDisabled",
-    "defaultValue" : "false",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
-  }, {
-    "name" : "botcommands.text.showSuggestions",
-    "defaultValue" : "true",
-    "type" : "java.lang.Boolean",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
-  }, {
-    "name" : "botcommands.text.dmClosedEmoji",
-    "defaultValue" : "mailbox_closed",
-    "type" : "net.dv8tion.jda.api.entities.emoji.Emoji",
-    "sourceType" : "io.github.freya022.botcommands.api.core.config.BTextConfig"
-  } ],
-  "hints" : [ ]
+  "groups": [],
+  "properties": [
+    {
+      "name": "botcommands.application.enable",
+      "defaultValue": "true",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "Whether application commands should be listened for. Default: `true`."
+    },
+    {
+      "name": "botcommands.application.slashGuildIds",
+      "type": "java.util.List<java.lang.Long>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "If not empty, only these guilds will have their application commands updated. Existing commands won't be removed in other guilds, global commands will still be updated."
+    },
+    {
+      "name": "botcommands.application.testGuildIds",
+      "type": "java.util.List<java.lang.Long>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "Test guilds IDs for all commands annotated with [Test]."
+    },
+    {
+      "name": "botcommands.application.disableAutocompleteCache",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`. This could be useful when testing methods that use autocomplete caching while using hotswap. Default: `false`."
+    },
+    {
+      "name": "botcommands.application.onlineAppCommandCheckEnabled",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "Enables the library to compare local commands against Discord's command,  to check if application commands need to be updated. The default behavior is to compare the command data to what has been locally saved,  as it does not require any request, and is therefore way faster. The issue with local checks is that you could update commands on another machine,  while the other machine is not aware of it. Which is why you should use online checks during development,  but local checks in production, as they avoid requests and aren't run on multiple machines. **Note**: This does not enable you to run two instances simultaneously. Default: `false`."
+    },
+    {
+      "name": "botcommands.application.diffEngine",
+      "defaultValue": "new",
+      "type": "io.github.freya022.botcommands.api.commands.application.diff.DiffEngine",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "The diff engine to use when comparing old and new application commands,  to determine if commands needs to be updated. Only change this if necessary. Default: [DiffEngine.NEW]."
+    },
+    {
+      "name": "botcommands.application.logApplicationCommandData",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "Whether the raw JSON of the application commands should be logged when an update is required. Default: `false`."
+    },
+    {
+      "name": "botcommands.application.forceGuildCommands",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "Sets whether all application commands should be guild-only, regardless of the command scope on the annotation. **Beware**: This also means that your global application commands will **not** be registered. **Note:** This only works on **annotated** commands,  as you can return when manually declaring with the DSL Default: `false`."
+    },
+    {
+      "name": "botcommands.application.localizations",
+      "type": "java.util.Map<java.lang.String, java.util.List<net.dv8tion.jda.api.interactions.DiscordLocale>>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "Mappings between the base bundle name and the locales it supports. For example: `MyCommands` -> `[Locale.GERMAN, Locale.FRENCH]`  will, by default, find bundles `MyCommands_de_DE.json` and `MyCommands_fr_FR.json`."
+    },
+    {
+      "name": "botcommands.application.logMissingLocalizationKeys",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BApplicationConfig",
+      "description": "Whether to log a `WARN` if a localization key isn't found when registering the commands. They will occur when a bundle from [baseNameToLocalesMap] doesn't contain  a value for a key requested by [LocalizationFunction],  such as command name/description, option name/description, choice name... Default: `false`."
+    },
+    {
+      "name": "botcommands.components.enable",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BComponentsConfig",
+      "description": "Allows loading component services,  such as [Components], [Buttons] and [SelectMenus]. This requires a [ConnectionSupplier] service to be present Default: `false`."
+    },
+    {
+      "name": "botcommands.core.predefinedOwnerIds",
+      "type": "java.util.Set<java.lang.Long>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BConfig",
+      "description": "Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,  and having [hidden commands][Hidden] shown. If not set, the application owners will be used, with roles \"Developer\" and above. **Note:** Prefer using [BotOwners] to get the effective bot owners, regardless of if this property is set or not."
+    },
+    {
+      "name": "botcommands.core.packages",
+      "type": "java.util.Set<java.lang.String>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BConfig",
+      "description": "The packages the framework will scan through for services, commands, handlers..."
+    },
+    {
+      "name": "botcommands.core.classes",
+      "type": "java.util.Set<java.lang.Class>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BConfig",
+      "description": "Additional classes the framework will scan through for services, commands, handlers..."
+    },
+    {
+      "name": "botcommands.core.disableExceptionsInDMs",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BConfig",
+      "description": "Disables sending exceptions to the bot owners Default: `false`."
+    },
+    {
+      "name": "botcommands.core.disableAutocompleteCache",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BConfig",
+      "description": "Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`. This could be useful when testing methods that use autocomplete caching while using hotswap. Default: `false`.",
+      "deprecation": {
+        "reason": "Moved to BApplicationConfig.",
+        "level": "warning",
+        "replacement": "botcommands.application.disableAutocompleteCache"
+      }
+    },
+    {
+      "name": "botcommands.core.ignoredIntents",
+      "type": "java.util.Set<net.dv8tion.jda.api.requests.GatewayIntent>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BConfig",
+      "description": "Gateway intents to ignore when checking for [event listeners][BEventListener] intents."
+    },
+    {
+      "name": "botcommands.core.ignoredEventIntents",
+      "type": "java.util.Set<java.lang.Class<net.dv8tion.jda.api.events.Event>>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BConfig",
+      "description": "Events for which the [event waiter][EventWaiter] must ignore intent requirements. If not ignored, the event would still be being listened to, but a warning would have been logged."
+    },
+    {
+      "name": "botcommands.database.dumpLongTransactions",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BDatabaseConfig",
+      "description": "Whether transactions should trigger a coroutine dump & thread dump  when running longer than the [max transaction duration][ConnectionSupplier.maxTransactionDuration] **Note:** You need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info. Default: `false`."
+    },
+    {
+      "name": "botcommands.database.logQueries",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BDatabaseConfig",
+      "description": "Determines whether *all* SQL queries should be logged on `TRACE`. The `TRACE` log level is required on the class that created the prepared statement. Default: `false`."
+    },
+    {
+      "name": "botcommands.database.logQueryParameters",
+      "defaultValue": "true",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BDatabaseConfig",
+      "description": "Determines if the SQL query logger will replace query parameters by their value. Default: `true`."
+    },
+    {
+      "name": "botcommands.database.queryLogThreshold",
+      "type": "java.time.Duration",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BDatabaseConfig",
+      "description": "The duration a query has to run for it to be logged on `WARN`."
+    },
+    {
+      "name": "botcommands.debug.enableApplicationDiffsLogs",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BDebugConfig",
+      "description": "Whether the differences between old and new application commands data should be logged. This will always be on for [DiffEngine.NEW]. Default: `false`.",
+      "deprecation": {
+        "reason": "Always on with the default diff engine.",
+        "level": "warning"
+      }
+    },
+    {
+      "name": "botcommands.debug.enabledMissingLocalizationLogs",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BDebugConfig",
+      "description": "Whether the missing localization strings when creation the command objects should be logged Default: `false`.",
+      "deprecation": {
+        "reason": "Moved to BApplicationConfig#logMissingLocalizationKeys.",
+        "level": "warning",
+        "replacement": "botcommands.application.logMissingLocalizationKeys"
+      }
+    },
+    {
+      "name": "botcommands.localization.responseBundles",
+      "type": "java.util.Set<java.lang.String>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BLocalizationConfig",
+      "description": "Localization bundles available for localizing interaction responses, with [LocalizableInteraction],  not to be confused with those used to [localize commands][BApplicationConfigBuilder.addLocalizations]. As a reminder, the localization bundles are in `bc_localization` by default. For example: `MyCommandResponses` will, by default,  find bundles similar to `/bc_localization/MyCommands_<locale>.json`. See [DefaultLocalizationMapProvider] and [DefaultJsonLocalizationMapReader] for default implementation details."
+    },
+    {
+      "name": "botcommands.text.enable",
+      "defaultValue": "true",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BTextConfig",
+      "description": "Whether text commands should be listened for. Default: `true`."
+    },
+    {
+      "name": "botcommands.text.usePingAsPrefix",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BTextConfig",
+      "description": "Whether the bot should look for commands when it is mentioned. Default: `false`."
+    },
+    {
+      "name": "botcommands.text.prefixes",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BTextConfig",
+      "description": "Prefixes the bot should listen to."
+    },
+    {
+      "name": "botcommands.text.isHelpDisabled",
+      "defaultValue": "false",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BTextConfig",
+      "description": "Whether the default help command is disabled. This also disables help content when a user misuses a command. This still lets you define your own help command with [IHelpCommand]. Default: `false`."
+    },
+    {
+      "name": "botcommands.text.showSuggestions",
+      "defaultValue": "true",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BTextConfig",
+      "description": "Whether command suggestions will be shown when a user tries to use an invalid command. Default: `true`."
+    },
+    {
+      "name": "botcommands.text.dmClosedEmoji",
+      "defaultValue": "mailbox_closed",
+      "type": "java.lang.String",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.BTextConfig",
+      "description": "Emoji used to indicate a user that their DMs are closed. This is only used if [the closed DMs error message][DefaultMessages.getClosedDMErrorMsg] can't be sent. Default: `mailbox_closed`."
+    },
+    {
+      "name": "jda.intents",
+      "type": "java.util.Set<net.dv8tion.jda.api.requests.GatewayIntent>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.JDAConfiguration",
+      "description": "The intents for each shard. Default: [JDAService.defaultIntents]."
+    },
+    {
+      "name": "jda.cacheFlags",
+      "type": "java.util.Set<net.dv8tion.jda.api.utils.cache.CacheFlag>",
+      "sourceType": "io.github.freya022.botcommands.api.core.config.JDAConfiguration",
+      "description": "The cache flags for each shard. Default: None."
+    }
+  ],
+  "hints": [
+    {
+      "name": "botcommands.core.ignoredEventIntents",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "net.dv8tion.jda.api.events.Event"
+          }
+        }
+      ]
+    }
+  ]
 }

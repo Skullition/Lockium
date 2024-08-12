@@ -7,15 +7,15 @@ import org.jetbrains.annotations.NotNull;
 
 @BService
 public class DatabaseSource implements HikariSourceSupplier {
-    private final HikariDataSource dataSource;
+  private final HikariDataSource dataSource;
 
-    public DatabaseSource(@NotNull HikariDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+  public DatabaseSource(@NotNull HikariDataSource dataSource) {
+    this.dataSource = dataSource;
+  }
 
-    @NotNull
-    @Override
-    public HikariDataSource getSource() {
-        return dataSource;
-    }
+  @NotNull
+  @Override
+  public HikariDataSource getSource() {
+    return dataSource;
+  }
 }

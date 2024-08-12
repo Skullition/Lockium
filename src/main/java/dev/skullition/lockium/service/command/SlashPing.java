@@ -7,10 +7,13 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 
 @Command
 public class SlashPing extends ApplicationCommand {
-    @JDASlashCommand(name = "ping", description = "Gets the REST ping.")
-    public void onSlashPing(GuildSlashEvent event) {
-        event.deferReply(true).queue();
+  @JDASlashCommand(name = "ping", description = "Gets the REST ping.")
+  public void onSlashPing(GuildSlashEvent event) {
+    event.deferReply(true).queue();
 
-        event.getJDA().getRestPing().queue(ping -> event.getHook().editOriginal("Pong! Time taken: " + ping + " ms.").queue());
-    }
+    event
+        .getJDA()
+        .getRestPing()
+        .queue(ping -> event.getHook().editOriginal("Pong! Time taken: " + ping + " ms.").queue());
+  }
 }

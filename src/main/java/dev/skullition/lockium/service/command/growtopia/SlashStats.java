@@ -11,25 +11,31 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class SlashStats extends ApplicationCommand {
-    private final GrowtopiaDetailProxy proxy;
+  private final GrowtopiaDetailProxy proxy;
 
-    public SlashStats(GrowtopiaDetailProxy proxy) {
-        this.proxy = proxy;
+  public SlashStats(GrowtopiaDetailProxy proxy) {
+    this.proxy = proxy;
+  }
+
+  @JDASlashCommand(
+      name = "growtopia",
+      subcommand = "stats",
+      description = "Gets data about the game's server stats.")
+  public void onSlashStats(GuildSlashEvent event) {
+    var proxyResult = proxy.getGrowtopiaDetail();
+    if (proxyResult.isEmpty()) {
+      event
+          .reply("It seems that I can't fetch this right now. Perhaps try again later? [500]")
+          .queue();
+      return;
     }
 
-    @JDASlashCommand(name = "growtopia", subcommand = "stats", description = "Gets data about the game's server stats.")
-    public void onSlashStats(GuildSlashEvent event) {
-        var proxyResult = proxy.getGrowtopiaDetail();
-        if (proxyResult.isEmpty()) {
-            event.reply("It seems that I can't fetch this right now. Perhaps try again later? [500]").queue();
-            return;
-        }
-
-        GrowtopiaDetail growtopiaDetail = proxyResult.get();
-        MessageEmbed embed = new EmbedBuilder()
-                .addField("Online Users:", growtopiaDetail.onlineUsers(), false)
-                .addField("WOTD:", growtopiaDetail.wotdName(), false)
-                .build();
-        event.replyEmbeds(embed).queue();
-    }
+    GrowtopiaDetail growtopiaDetail = proxyResult.get();
+    MessageEmbed embed =
+        new EmbedBuilder()
+            .addField("Online Users:", growtopiaDetail.onlineUsers(), false)
+            .addField("WOTD:", growtopiaDetail.wotdName(), false)
+            .build();
+    event.replyEmbeds(embed).queue();
+  }
 }

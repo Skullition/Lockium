@@ -11,8 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(SecretsConfig.class)
 public class LockiumApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(LockiumApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(LockiumApplication.class, args);
+  }
 }

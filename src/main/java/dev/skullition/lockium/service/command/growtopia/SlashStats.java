@@ -8,13 +8,17 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.springframework.beans.factory.ObjectProvider;
 
 @Command
 public class SlashStats extends ApplicationCommand {
   private final GrowtopiaDetailProxy proxy;
+  private final ObjectProvider<EmbedBuilder> embedBuilderObjectProvider;
 
-  public SlashStats(GrowtopiaDetailProxy proxy) {
+  public SlashStats(
+      GrowtopiaDetailProxy proxy, ObjectProvider<EmbedBuilder> embedBuilderObjectProvider) {
     this.proxy = proxy;
+    this.embedBuilderObjectProvider = embedBuilderObjectProvider;
   }
 
   @JDASlashCommand(
@@ -32,7 +36,8 @@ public class SlashStats extends ApplicationCommand {
 
     GrowtopiaDetail growtopiaDetail = proxyResult.get();
     MessageEmbed embed =
-        new EmbedBuilder()
+        embedBuilderObjectProvider
+            .getObject(event)
             .addField("Online Users:", growtopiaDetail.onlineUsers(), false)
             .addField("WOTD:", growtopiaDetail.wotdName(), false)
             .build();

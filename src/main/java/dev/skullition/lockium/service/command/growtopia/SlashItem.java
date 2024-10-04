@@ -2,6 +2,7 @@ package dev.skullition.lockium.service.command.growtopia;
 
 import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.proxy.GrowtopiaWikiProxy;
+import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
@@ -9,21 +10,18 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
 import java.util.Optional;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.ObjectProvider;
 
 @Command
 public class SlashItem extends ApplicationCommand {
   private final GrowtopiaWikiProxy proxy;
-  private final ObjectProvider<EmbedBuilder> embedBuilderObjectProvider;
+  private final EmbedStarterSupplier embedStarterSupplier;
 
-  public SlashItem(
-      final GrowtopiaWikiProxy proxy, ObjectProvider<EmbedBuilder> embedBuilderObjectProvider) {
+  public SlashItem(final GrowtopiaWikiProxy proxy, EmbedStarterSupplier embedStarterSupplier) {
     this.proxy = proxy;
-    this.embedBuilderObjectProvider = embedBuilderObjectProvider;
+    this.embedStarterSupplier = embedStarterSupplier;
   }
 
   @TopLevelSlashCommandData(description = "Slash commands related to Growtopia.")
@@ -55,8 +53,8 @@ public class SlashItem extends ApplicationCommand {
     }
     GrowtopiaItem item = result.get();
     MessageEmbed embed =
-        embedBuilderObjectProvider
-            .getObject(event)
+        embedStarterSupplier
+            .get(event)
             .setAuthor(itemName, item.itemWikiUrl())
             .setTitle(item.itemWikiUrl())
             .setThumbnail(item.spriteUrl())

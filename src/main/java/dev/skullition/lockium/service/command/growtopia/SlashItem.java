@@ -40,9 +40,10 @@ public class SlashItem extends ApplicationCommand {
           Boolean shouldGetDataFromWiki) {
     if (shouldGetDataFromWiki != null && shouldGetDataFromWiki) {
       getDataFromWiki(event, itemName);
-    } else {
-      // TODO: Get data internally
+      return;
     }
+    // TODO: Get data internally
+    event.reply("TODO: Get data internally.").queue();
   }
 
   private void getDataFromWiki(GuildSlashEvent event, @NotNull String itemName) {

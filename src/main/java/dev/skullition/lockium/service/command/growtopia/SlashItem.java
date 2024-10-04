@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** Command to get Growtopia item data information. */
 @Command
 public class SlashItem extends ApplicationCommand {
   private final GrowtopiaWikiProxy proxy;
@@ -24,6 +25,14 @@ public class SlashItem extends ApplicationCommand {
     this.embedStarterSupplier = embedStarterSupplier;
   }
 
+  /**
+   * Handles the {@code /growtopia item} slash command. Retrieves item data either from the
+   * Growtopia Wiki or internally based on the user's choice.
+   *
+   * @param event the {@link GuildSlashEvent} representing the slash command interaction
+   * @param itemName the name of the item to retrieve data for
+   * @param shouldGetDataFromWiki whether the data should be fetched from the wiki or internally
+   */
   @TopLevelSlashCommandData(description = "Slash commands related to Growtopia.")
   @JDASlashCommand(
       name = "growtopia",

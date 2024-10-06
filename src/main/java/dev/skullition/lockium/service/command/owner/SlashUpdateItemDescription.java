@@ -4,6 +4,8 @@ import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.proxy.GrowtopiaWikiProxy;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
+import io.github.freya022.botcommands.api.commands.application.CommandScope;
+import io.github.freya022.botcommands.api.commands.application.annotations.Test;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
@@ -12,8 +14,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.Set;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +38,18 @@ public class SlashUpdateItemDescription extends ApplicationCommand {
     this.proxy = proxy;
   }
 
-  @TopLevelSlashCommandData(description = "Owner only slash commands.")
+  /**
+   * Handles the {@code /owner update_item_descriptions} command. Sends a file with the required
+   * item descriptions.
+   *
+   * @param event the {@link GuildSlashEvent} representing the slash command interaction
+   * @param attachment the file with the required item names, separated by '|'
+   */
+  @Test
+  @TopLevelSlashCommandData(
+      description = "Owner only slash commands.",
+      defaultLocked = true,
+      scope = CommandScope.GUILD)
   @JDASlashCommand(
       name = "owner",
       subcommand = "update_item_descriptions",
@@ -40,17 +57,35 @@ public class SlashUpdateItemDescription extends ApplicationCommand {
   public void onSlashUpdate(
       GuildSlashEvent event,
       @NotNull @SlashOption(name = "file", description = "File to update from")
-          Message.Attachment file) {
+          Message.Attachment attachment) {
     if (!owners.contains(event.getUser().getIdLong())) {
       event.reply("This is an owner-only command.").queue();
       return;
     }
-    
-    file.getProxy().download().thenAccept(action -> consumeFile(action, event));
-    event.reply("Updating the item descriptions from " + file.getFileName()).queue();
+
+    attachment
+        .getProxy()
+        .download()
+        .thenApply(this::processItemDescriptionsFromStream)
+        .thenAccept(
+            optionalStream ->
+                optionalStream.ifPresentOrElse(
+                    bytes -> {
+                      var fileUpload = FileUpload.fromData(bytes, "Item Descriptions.txt");
+                      var message = MessageCreateData.fromFiles(fileUpload);
+                      event.getHook().sendMessage(message).queue();
+                    },
+                    () ->
+                        event
+                            .getHook()
+                            .editOriginal("Couldn't get wiki entry for an item.")
+                            .queue()));
+
+    event.reply("Updating the item descriptions from " + attachment.getFileName()).queue();
   }
 
-  private void consumeFile(InputStream stream, GuildSlashEvent event) {
+  private Optional<byte[]> processItemDescriptionsFromStream(InputStream stream) {
+    StringBuilder stringBuilder = new StringBuilder();
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
       for (String line = reader.readLine(); line != null; line = reader.readLine()) {
         String[] split = line.split("\\|");
@@ -60,17 +95,20 @@ public class SlashUpdateItemDescription extends ApplicationCommand {
         logger.debug("Getting item description of {} ({})", itemName, itemId);
         var result = proxy.getItemData(itemName);
         if (result.isEmpty()) {
-          event.getHook().editOriginal("Couldn't get wiki entry for " + itemName).queue();
-          return;
+          logger.error("Item {} not found while trying to look up wiki.", itemName);
+          return Optional.empty();
         }
 
         GrowtopiaItem item = result.get();
-        // TODO: Process obtained item desc
-        logger.info("{} | {}", itemName, item.description());
+        stringBuilder.append("// ").append(itemName).append("\n");
+        stringBuilder.append(itemId).append("|").append(item.description()).append("\n");
+        stringBuilder.append("\n");
       }
-      stream.close();
     } catch (IOException e) {
       logger.error("Couldn't read item description file", e);
+      return Optional.empty();
     }
+    byte[] bytes = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
+    return Optional.of(bytes);
   }
 }

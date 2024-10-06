@@ -12,16 +12,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Set;
 import net.dv8tion.jda.api.entities.Message;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 /** Command to update item description based on attached file. */
 @Command
 public class SlashUpdateItemDescription extends ApplicationCommand {
   private static final Logger logger = LoggerFactory.getLogger(SlashUpdateItemDescription.class);
   private final GrowtopiaWikiProxy proxy;
+
+  @Value("${botcommands.core.predefined-owner-ids}")
+  private Set<Long> owners;
 
   public SlashUpdateItemDescription(GrowtopiaWikiProxy proxy) {
     this.proxy = proxy;
@@ -36,6 +41,11 @@ public class SlashUpdateItemDescription extends ApplicationCommand {
       GuildSlashEvent event,
       @NotNull @SlashOption(name = "file", description = "File to update from")
           Message.Attachment file) {
+    if (!owners.contains(event.getUser().getIdLong())) {
+      event.reply("This is an owner-only command.").queue();
+      return;
+    }
+    
     file.getProxy().download().thenAccept(action -> consumeFile(action, event));
     event.reply("Updating the item descriptions from " + file.getFileName()).queue();
   }
@@ -44,7 +54,7 @@ public class SlashUpdateItemDescription extends ApplicationCommand {
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
       for (String line = reader.readLine(); line != null; line = reader.readLine()) {
         String[] split = line.split("\\|");
-        
+
         String itemId = split[0];
         String itemName = split[1];
         logger.debug("Getting item description of {} ({})", itemName, itemId);
@@ -53,7 +63,7 @@ public class SlashUpdateItemDescription extends ApplicationCommand {
           event.getHook().editOriginal("Couldn't get wiki entry for " + itemName).queue();
           return;
         }
-        
+
         GrowtopiaItem item = result.get();
         // TODO: Process obtained item desc
         logger.info("{} | {}", itemName, item.description());

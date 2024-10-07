@@ -14,8 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -27,20 +27,20 @@ import org.springframework.beans.factory.annotation.Value;
 
 /** Command to update item description based on attached file. */
 @Command
-public class SlashUpdateItemDescription extends ApplicationCommand {
-  private static final Logger logger = LoggerFactory.getLogger(SlashUpdateItemDescription.class);
+public class SlashUpdateItemData extends ApplicationCommand {
+  private static final Logger logger = LoggerFactory.getLogger(SlashUpdateItemData.class);
   private final GrowtopiaWikiProxy proxy;
 
   @Value("${botcommands.core.predefined-owner-ids}")
   private Set<Long> owners;
 
-  public SlashUpdateItemDescription(GrowtopiaWikiProxy proxy) {
+  public SlashUpdateItemData(GrowtopiaWikiProxy proxy) {
     this.proxy = proxy;
   }
 
   /**
-   * Handles the {@code /owner update_item_descriptions} command. Sends a file with the required
-   * item descriptions.
+   * Handles the {@code /owner update_item_data} command. Sends a file with the required
+   * item data.
    *
    * @param event the {@link GuildSlashEvent} representing the slash command interaction
    * @param attachment the file with the required item names, separated by '|'
@@ -52,8 +52,8 @@ public class SlashUpdateItemDescription extends ApplicationCommand {
       scope = CommandScope.GUILD)
   @JDASlashCommand(
       name = "owner",
-      subcommand = "update_item_descriptions",
-      description = "Updates all item descriptions from a file.")
+      subcommand = "update_item_data",
+      description = "Updates all item data from a file.")
   public void onSlashUpdate(
       GuildSlashEvent event,
       @NotNull @SlashOption(name = "file", description = "File to update from")
@@ -68,47 +68,51 @@ public class SlashUpdateItemDescription extends ApplicationCommand {
         .download()
         .thenApply(this::processItemDescriptionsFromStream)
         .thenAccept(
-            optionalStream ->
-                optionalStream.ifPresentOrElse(
-                    bytes -> {
-                      var fileUpload = FileUpload.fromData(bytes, "Item Descriptions.txt");
-                      var message = MessageCreateData.fromFiles(fileUpload);
-                      event.getHook().sendMessage(message).queue();
-                    },
-                    () ->
-                        event
-                            .getHook()
-                            .editOriginal("Couldn't get wiki entry for an item.")
-                            .queue()));
+            fileUploads -> {
+              if (fileUploads.isEmpty()) {
+                event.getHook().editOriginal("Couldn't get wiki entry for an item.").queue();
+              }
+              var message = MessageCreateData.fromFiles(fileUploads);
+              event.getHook().sendMessage(message).queue();
+            });
 
-    event.reply("Updating the item descriptions from " + attachment.getFileName()).queue();
+    event.reply("Updating item data from " + attachment.getFileName()).queue();
   }
 
-  private Optional<byte[]> processItemDescriptionsFromStream(InputStream stream) {
-    StringBuilder stringBuilder = new StringBuilder();
+  private List<FileUpload> processItemDescriptionsFromStream(InputStream stream) {
+    StringBuilder descriptionSb = new StringBuilder();
+    StringBuilder chiSb = new StringBuilder();
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
       for (String line = reader.readLine(); line != null; line = reader.readLine()) {
         String[] split = line.split("\\|");
 
         String itemId = split[0];
         String itemName = split[1];
-        logger.debug("Getting item description of {} ({})", itemName, itemId);
+        logger.debug("Getting item data of {} ({})", itemName, itemId);
         var result = proxy.getItemData(itemName);
         if (result.isEmpty()) {
           logger.error("Item {} not found while trying to look up wiki.", itemName);
-          return Optional.empty();
+          return Collections.emptyList();
         }
 
         GrowtopiaItem item = result.get();
-        stringBuilder.append("// ").append(itemName).append("\n");
-        stringBuilder.append(itemId).append("|").append(item.description()).append("\n");
-        stringBuilder.append("\n");
+
+        descriptionSb.append("// ").append(itemName).append("\n");
+        descriptionSb.append(itemId).append("|").append(item.description()).append("\n");
+        descriptionSb.append("\n");
+
+        chiSb.append("// ").append(itemName).append("\n");
+        chiSb.append(itemId).append("|").append(item.itemField().chi()).append("\n");
+        chiSb.append("\n");
       }
     } catch (IOException e) {
-      logger.error("Couldn't read item description file", e);
-      return Optional.empty();
+      logger.error("Couldn't read item data file", e);
+      return Collections.emptyList();
     }
-    byte[] bytes = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
-    return Optional.of(bytes);
+    // TODO: Update all item stuff instead
+    FileUpload descriptions =
+        FileUpload.fromData(descriptionSb.toString().getBytes(), "Item Descriptions.txt");
+    FileUpload chi = FileUpload.fromData(chiSb.toString().getBytes(), "Chi.txt");
+    return List.of(descriptions, chi);
   }
 }

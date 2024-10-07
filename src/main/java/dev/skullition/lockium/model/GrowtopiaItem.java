@@ -1,6 +1,7 @@
 package dev.skullition.lockium.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public record GrowtopiaItem(
     @NotNull String spriteUrl,
@@ -8,4 +9,5 @@ public record GrowtopiaItem(
     int rarity,
     @NotNull String description,
     @NotNull String properties,
-    @NotNull GrowtopiaItemField itemField) {}
+    @NotNull GrowtopiaItemField itemField,
+    @Nullable ClothingEffects clothingEffects) {}

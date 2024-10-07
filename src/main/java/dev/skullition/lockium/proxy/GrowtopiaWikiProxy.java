@@ -1,6 +1,7 @@
 package dev.skullition.lockium.proxy;
 
 import dev.skullition.lockium.builder.GrowtopiaItemFieldBuilder;
+import dev.skullition.lockium.model.ClothingEffects;
 import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.model.GrowtopiaItemField;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/** Proxy to get data from the Growtopia Wiki. */
 @Service
 public class GrowtopiaWikiProxy {
   private static final int MAX_RARITY = 999;
@@ -26,6 +28,13 @@ public class GrowtopiaWikiProxy {
   @Value("${growtopia.wiki-url}")
   private String wikiUrl;
 
+  /**
+   * Get data about an item based from a Case-Sensitive item name.
+   *
+   * @param itemName the item name.
+   * @return a {@link Optional} that could contain the queried item data, returns empty optional if
+   *     item is not found.
+   */
   public Optional<GrowtopiaItem> getItemData(@NotNull String itemName) {
     logger.debug("Fetching item data for {}", itemName);
     String resolvedItemName = getWikiItemName(itemName);
@@ -88,8 +97,40 @@ public class GrowtopiaWikiProxy {
     GrowtopiaItemField itemField = builder.build();
     logger.debug("Item field for {} is {}", itemName, itemField);
 
+    Optional<String> optionalOnWearing =
+        getParentElementText(document.selectFirst("img[alt=\"CheckboxEnabled\"]"));
+    Optional<String> optionalOnRemoving =
+        getParentElementText(document.selectFirst("img[alt=\"Checkbox0\"]"));
+    Optional<String> optionalEffect =
+        getParentElementChildItemModText(document.selectFirst("a[href=\"/wiki/Mods\"]"));
+
+    ClothingEffects clothingEffects;
+    if (optionalOnWearing.isEmpty() || optionalOnRemoving.isEmpty() || optionalEffect.isEmpty()) {
+      clothingEffects = null;
+    } else {
+      String onWearingText = optionalOnWearing.get();
+      String onRemovingText = optionalOnRemoving.get();
+      String itemMod = optionalEffect.get();
+      clothingEffects = new ClothingEffects(onWearingText, onRemovingText, itemMod);
+    }
+    logger.debug("Item effect for {} is {}", itemName, clothingEffects);
+
     return Optional.of(
-        new GrowtopiaItem(spriteUrl, itemWikiUrl, rarity, description, properties, itemField));
+        new GrowtopiaItem(
+            spriteUrl, itemWikiUrl, rarity, description, properties, itemField, clothingEffects));
+  }
+
+  @NotNull
+  private Optional<String> getParentElementText(@Nullable Element element) {
+    return Optional.ofNullable(element).map(Element::parent).map(Element::text);
+  }
+
+  @NotNull
+  private Optional<String> getParentElementChildItemModText(@Nullable Element element) {
+    return Optional.ofNullable(element)
+        .map(Element::parent)
+        .map(node -> node.selectFirst("i"))
+        .map(Element::text);
   }
 
   @NotNull

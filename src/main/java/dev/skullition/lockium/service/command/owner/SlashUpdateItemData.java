@@ -71,6 +71,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
             fileUploads -> {
               if (fileUploads.isEmpty()) {
                 event.getHook().editOriginal("Couldn't get wiki entry for an item.").queue();
+                return;
               }
               var message = MessageCreateData.fromFiles(fileUploads);
               event.getHook().sendMessage(message).queue();

@@ -1,7 +1,7 @@
 package dev.skullition.lockium.service.command.owner;
 
-import dev.skullition.lockium.model.ClothingEffects;
 import dev.skullition.lockium.model.GrowtopiaItem;
+import dev.skullition.lockium.model.ItemEffects;
 import dev.skullition.lockium.proxy.GrowtopiaWikiProxy;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
@@ -111,7 +111,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
         chiSb.append(itemId).append("|").append(item.itemField().chi()).append("\n");
         chiSb.append("\n");
 
-        ClothingEffects effects = item.clothingEffects();
+        ItemEffects effects = item.itemEffects();
         if (effects == null) {
           logger.debug("Skipping {} as it is not clothing.", itemName);
         } else {
@@ -121,7 +121,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
               .append("|")
               .append(effects.effect())
               .append("|")
-              .append(effects.onWearingText())
+              .append(effects.onUseText())
               .append(effects.onRemoveText())
               .append("\n");
           effectsSb.append("\n");
@@ -131,7 +131,6 @@ public class SlashUpdateItemData extends ApplicationCommand {
       logger.error("Couldn't read item data file", e);
       return Collections.emptyList();
     }
-    // TODO: Update all item stuff instead
     FileUpload descriptions =
         FileUpload.fromData(descriptionSb.toString().getBytes(), "Item Descriptions.txt");
     FileUpload chi = FileUpload.fromData(chiSb.toString().getBytes(), "Chi.txt");

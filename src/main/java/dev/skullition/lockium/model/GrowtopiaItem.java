@@ -10,4 +10,4 @@ public record GrowtopiaItem(
     @NotNull String description,
     @NotNull String properties,
     @NotNull GrowtopiaItemField itemField,
-    @Nullable ClothingEffects clothingEffects) {}
+    @Nullable ItemEffects itemEffects) {}

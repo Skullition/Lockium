@@ -1,9 +1,9 @@
 package dev.skullition.lockium.proxy;
 
 import dev.skullition.lockium.builder.GrowtopiaItemFieldBuilder;
-import dev.skullition.lockium.model.ClothingEffects;
 import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.model.GrowtopiaItemField;
+import dev.skullition.lockium.model.ItemEffects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,27 +97,27 @@ public class GrowtopiaWikiProxy {
     GrowtopiaItemField itemField = builder.build();
     logger.debug("Item field for {} is {}", itemName, itemField);
 
-    Optional<String> optionalOnWearing =
+    Optional<String> optionalOnUse =
         getParentElementText(document.selectFirst("img[alt=\"CheckboxEnabled\"]"));
     Optional<String> optionalOnRemoving =
         getParentElementText(document.selectFirst("img[alt=\"Checkbox0\"]"));
     Optional<String> optionalEffect =
         getParentElementChildItemModText(document.selectFirst("a[href=\"/wiki/Mods\"]"));
 
-    ClothingEffects clothingEffects;
-    if (optionalOnWearing.isEmpty() || optionalOnRemoving.isEmpty() || optionalEffect.isEmpty()) {
-      clothingEffects = null;
+    ItemEffects itemEffects;
+    if (optionalOnUse.isEmpty() || optionalOnRemoving.isEmpty() || optionalEffect.isEmpty()) {
+      itemEffects = null;
     } else {
-      String onWearingText = optionalOnWearing.get();
+      String onUseText = optionalOnUse.get();
       String onRemovingText = optionalOnRemoving.get();
       String itemMod = optionalEffect.get();
-      clothingEffects = new ClothingEffects(onWearingText, onRemovingText, itemMod);
+      itemEffects = new ItemEffects(onUseText, onRemovingText, itemMod);
     }
-    logger.debug("Item effect for {} is {}", itemName, clothingEffects);
+    logger.debug("Item effect for {} is {}", itemName, itemEffects);
 
     return Optional.of(
         new GrowtopiaItem(
-            spriteUrl, itemWikiUrl, rarity, description, properties, itemField, clothingEffects));
+            spriteUrl, itemWikiUrl, rarity, description, properties, itemField, itemEffects));
   }
 
   @NotNull

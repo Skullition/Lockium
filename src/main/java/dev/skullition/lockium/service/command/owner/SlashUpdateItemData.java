@@ -1,5 +1,6 @@
 package dev.skullition.lockium.service.command.owner;
 
+import dev.skullition.lockium.model.ClothingEffects;
 import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.proxy.GrowtopiaWikiProxy;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
@@ -86,6 +87,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
   private List<FileUpload> processItemDescriptionsFromStream(InputStream stream) {
     StringBuilder descriptionSb = new StringBuilder();
     StringBuilder chiSb = new StringBuilder();
+    StringBuilder effectsSb = new StringBuilder();
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
       for (String line = reader.readLine(); line != null; line = reader.readLine()) {
         String[] split = line.split("\\|");
@@ -108,6 +110,22 @@ public class SlashUpdateItemData extends ApplicationCommand {
         chiSb.append("// ").append(itemName).append("\n");
         chiSb.append(itemId).append("|").append(item.itemField().chi()).append("\n");
         chiSb.append("\n");
+
+        ClothingEffects effects = item.clothingEffects();
+        if (effects == null) {
+          logger.debug("Skipping {} as it is not clothing.", itemName);
+        } else {
+          effectsSb.append("// ").append(itemName).append("\n");
+          effectsSb
+              .append(itemId)
+              .append("|")
+              .append(effects.effect())
+              .append("|")
+              .append(effects.onWearingText())
+              .append(effects.onRemoveText())
+              .append("\n");
+          effectsSb.append("\n");
+        }
       }
     } catch (IOException e) {
       logger.error("Couldn't read item data file", e);
@@ -117,6 +135,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
     FileUpload descriptions =
         FileUpload.fromData(descriptionSb.toString().getBytes(), "Item Descriptions.txt");
     FileUpload chi = FileUpload.fromData(chiSb.toString().getBytes(), "Chi.txt");
-    return List.of(descriptions, chi);
+    FileUpload effects = FileUpload.fromData(effectsSb.toString().getBytes(), "Effects.txt");
+    return List.of(descriptions, chi, effects);
   }
 }

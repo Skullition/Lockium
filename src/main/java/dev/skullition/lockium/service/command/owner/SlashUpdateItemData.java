@@ -39,8 +39,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
   }
 
   /**
-   * Handles the {@code /owner update_item_data} command. Sends a file with the required
-   * item data.
+   * Handles the {@code /owner update_item_data} command. Sends a file with the required item data.
    *
    * @param event the {@link GuildSlashEvent} representing the slash command interaction
    * @param attachment the file with the required item names, separated by '|'
@@ -59,6 +58,10 @@ public class SlashUpdateItemData extends ApplicationCommand {
       @NotNull @SlashOption(name = "file", description = "File to update from")
           Message.Attachment attachment) {
     if (!owners.contains(event.getUser().getIdLong())) {
+      logger.warn(
+          "{} tried to execute {} without enough privilege",
+          event.getUser(),
+          event.getFullCommandName());
       event.reply("This is an owner-only command.").queue();
       return;
     }

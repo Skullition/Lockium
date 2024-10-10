@@ -113,7 +113,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
 
         ItemEffects effects = item.itemEffects();
         if (effects == null) {
-          logger.debug("Skipping {} as it is not clothing.", itemName);
+          logger.debug("Skipping {} as it is not an item with effects.", itemName);
         } else {
           effectsSb.append("// ").append(itemName).append("\n");
           effectsSb
@@ -122,6 +122,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
               .append(effects.effect())
               .append("|")
               .append(effects.onUseText())
+              .append("|")
               .append(effects.onRemoveText())
               .append("\n");
           effectsSb.append("\n");

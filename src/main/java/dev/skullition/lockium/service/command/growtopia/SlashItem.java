@@ -1,7 +1,9 @@
 package dev.skullition.lockium.service.command.growtopia;
 
 import dev.skullition.lockium.model.GrowtopiaItem;
+import dev.skullition.lockium.model.GrowtopiaItemAutocompleteCache;
 import dev.skullition.lockium.proxy.GrowtopiaWikiProxy;
+import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocompleteSupplier;
 import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
@@ -9,20 +11,38 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete;
+import java.util.Collection;
 import java.util.Optional;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Command to get Growtopia item data information. */
 @Command
 public class SlashItem extends ApplicationCommand {
+  private static final String ITEM_AUTOCOMPLETE_NAME = "SlashItem: item";
   private final GrowtopiaWikiProxy proxy;
   private final EmbedStarterSupplier embedStarterSupplier;
+  private final GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier;
 
-  public SlashItem(final GrowtopiaWikiProxy proxy, EmbedStarterSupplier embedStarterSupplier) {
+  /**
+   * Command to handle obtaining item data information.
+   *
+   * @param proxy wiki proxy, to get data from the Growtopia wiki.
+   * @param embedStarterSupplier the embed starter, used to prevent duplicate code.
+   * @param itemAutocompleteSupplier the item autocomplete supplier, used to get the list of items
+   *     to autocomplete from.
+   */
+  public SlashItem(
+      final GrowtopiaWikiProxy proxy,
+      EmbedStarterSupplier embedStarterSupplier,
+      GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier) {
     this.proxy = proxy;
     this.embedStarterSupplier = embedStarterSupplier;
+    this.itemAutocompleteSupplier = itemAutocompleteSupplier;
   }
 
   /**
@@ -40,7 +60,11 @@ public class SlashItem extends ApplicationCommand {
       description = "Growtopia item data information.")
   public void onSlashItem(
       GuildSlashEvent event,
-      @NotNull @SlashOption(name = "item_name", description = "The item name you are looking for.")
+      @NotNull
+          @SlashOption(
+              name = "item_name",
+              description = "The item name you are looking for.",
+              autocomplete = ITEM_AUTOCOMPLETE_NAME)
           String itemName,
       @Nullable
           @SlashOption(
@@ -53,6 +77,20 @@ public class SlashItem extends ApplicationCommand {
     }
     // TODO: Get data internally
     event.reply("TODO: Get data internally.").queue();
+  }
+
+  /**
+   * Handles item autocomplete events.
+   *
+   * @param event the command autocomplete event.
+   * @return a {@link Collection} of item names.
+   */
+  @AutocompleteHandler(ITEM_AUTOCOMPLETE_NAME)
+  @CacheAutocomplete
+  public Collection<String> onItemAutocomplete(CommandAutoCompleteInteractionEvent event) {
+    return itemAutocompleteSupplier.get().stream()
+        .map(GrowtopiaItemAutocompleteCache::name)
+        .toList();
   }
 
   private void getDataFromWiki(GuildSlashEvent event, @NotNull String itemName) {

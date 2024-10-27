@@ -24,7 +24,7 @@ public class SinisterProxy {
   public Flux<GrowtopiaItemAutocompleteCache> getItemCache() {
     return webClient
         .get()
-        .uri("/api/GrowtopiaItem/list")
+        .uri("/api/GrowtopiaItems")
         .retrieve()
         .bodyToFlux(GrowtopiaItemAutocompleteCache.class);
   }

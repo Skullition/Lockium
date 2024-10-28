@@ -1,7 +1,5 @@
 package dev.skullition.lockium;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import dev.skullition.lockium.client.GrowtopiaDetailClient;
 import dev.skullition.lockium.client.SinisterClient;
 import java.util.List;
@@ -50,8 +48,6 @@ public class LockiumConfiguration {
    */
   @Bean
   public GrowtopiaDetailClient growtopiaDetailClient(RestClient.Builder builder) {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
     converter.setSupportedMediaTypes(List.of(MediaType.TEXT_HTML));
     RestClient restClient =

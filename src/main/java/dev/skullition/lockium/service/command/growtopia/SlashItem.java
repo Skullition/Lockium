@@ -1,8 +1,8 @@
 package dev.skullition.lockium.service.command.growtopia;
 
+import dev.skullition.lockium.client.GrowtopiaWikiClient;
 import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.model.GrowtopiaItemAutocompleteCache;
-import dev.skullition.lockium.proxy.GrowtopiaWikiProxy;
 import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocompleteSupplier;
 import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 @Command
 public class SlashItem extends ApplicationCommand {
   private static final String ITEM_AUTOCOMPLETE_NAME = "SlashItem: item";
-  private final GrowtopiaWikiProxy proxy;
+  private final GrowtopiaWikiClient proxy;
   private final EmbedStarterSupplier embedStarterSupplier;
   private final GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier;
 
@@ -37,7 +37,7 @@ public class SlashItem extends ApplicationCommand {
    *     to autocomplete from.
    */
   public SlashItem(
-      final GrowtopiaWikiProxy proxy,
+      final GrowtopiaWikiClient proxy,
       EmbedStarterSupplier embedStarterSupplier,
       GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier) {
     this.proxy = proxy;

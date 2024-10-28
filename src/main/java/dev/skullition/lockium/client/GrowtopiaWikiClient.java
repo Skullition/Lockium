@@ -1,4 +1,4 @@
-package dev.skullition.lockium.proxy;
+package dev.skullition.lockium.client;
 
 import dev.skullition.lockium.builder.GrowtopiaItemFieldBuilder;
 import dev.skullition.lockium.model.GrowtopiaItem;
@@ -19,11 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-/** Proxy to get data from the Growtopia Wiki. */
+/** Client to get data from the Growtopia Wiki. */
 @Service
-public class GrowtopiaWikiProxy {
+public class GrowtopiaWikiClient {
   private static final int MAX_RARITY = 999;
-  private static final Logger logger = LoggerFactory.getLogger(GrowtopiaWikiProxy.class);
+  private static final Logger logger = LoggerFactory.getLogger(GrowtopiaWikiClient.class);
 
   @Value("${growtopia.wiki-url}")
   private String wikiUrl;

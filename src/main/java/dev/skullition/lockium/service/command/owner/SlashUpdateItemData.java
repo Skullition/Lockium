@@ -1,8 +1,8 @@
 package dev.skullition.lockium.service.command.owner;
 
+import dev.skullition.lockium.client.GrowtopiaWikiClient;
 import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.model.ItemEffects;
-import dev.skullition.lockium.proxy.GrowtopiaWikiProxy;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.CommandScope;
@@ -30,12 +30,12 @@ import org.springframework.beans.factory.annotation.Value;
 @Command
 public class SlashUpdateItemData extends ApplicationCommand {
   private static final Logger logger = LoggerFactory.getLogger(SlashUpdateItemData.class);
-  private final GrowtopiaWikiProxy proxy;
+  private final GrowtopiaWikiClient proxy;
 
   @Value("${botcommands.core.predefined-owner-ids}")
   private Set<Long> owners;
 
-  public SlashUpdateItemData(GrowtopiaWikiProxy proxy) {
+  public SlashUpdateItemData(GrowtopiaWikiClient proxy) {
     this.proxy = proxy;
   }
 

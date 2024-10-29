@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete;
 import java.util.Collection;
 import java.util.Optional;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -50,7 +49,7 @@ public class SlashItem extends ApplicationCommand {
    * Growtopia Wiki or internally based on the user's choice.
    *
    * @param event the {@link GuildSlashEvent} representing the slash command interaction
-   * @param itemName the name of the item to retrieve data for
+   * @param itemAutocomplete the name of the item to retrieve data for
    * @param shouldGetDataFromWiki whether the data should be fetched from the wiki or internally
    */
   @TopLevelSlashCommandData(description = "Slash commands related to Growtopia.")
@@ -65,18 +64,18 @@ public class SlashItem extends ApplicationCommand {
               name = "item_name",
               description = "The item name you are looking for.",
               autocomplete = ITEM_AUTOCOMPLETE_NAME)
-          String itemName,
+          GrowtopiaItemAutocompleteCache itemAutocomplete,
       @Nullable
           @SlashOption(
               name = "get_data_from_wiki",
               description = "Whether the data should be fetched from the wiki or internally.")
           Boolean shouldGetDataFromWiki) {
     if (shouldGetDataFromWiki != null && shouldGetDataFromWiki) {
-      getDataFromWiki(event, itemName);
+      getDataFromWiki(event, itemAutocomplete.name());
       return;
     }
     // TODO: Get data internally
-    event.reply("TODO: Get data internally.").queue();
+    event.reply(itemAutocomplete.toString()).queue();
   }
 
   /**
@@ -86,9 +85,8 @@ public class SlashItem extends ApplicationCommand {
    * @return a {@link Collection} of item names.
    */
   @AutocompleteHandler(ITEM_AUTOCOMPLETE_NAME)
-  @CacheAutocomplete
   public Collection<String> onItemAutocomplete(CommandAutoCompleteInteractionEvent event) {
-    return itemAutocompleteSupplier.get().stream()
+    return itemAutocompleteSupplier.getList().stream()
         .map(GrowtopiaItemAutocompleteCache::name)
         .toList();
   }

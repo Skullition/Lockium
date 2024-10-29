@@ -1,11 +1,15 @@
 package dev.skullition.lockium.service.supplier.autocomplete;
 
 import dev.skullition.lockium.model.GrowtopiaItemAutocompleteCache;
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
-/**
-* interface for supplying autocomplete options of item names.
-*/
+/** interface for supplying autocomplete options of item names. */
 public interface GrowtopiaItemAutocompleteSupplier {
-  Collection<GrowtopiaItemAutocompleteCache> get();
+  @NotNull
+  List<GrowtopiaItemAutocompleteCache> getList();
+
+  @NotNull
+  Map<Integer, GrowtopiaItemAutocompleteCache> getMap();
 }

@@ -4,7 +4,7 @@ import dev.skullition.lockium.client.GrowtopiaDetailClient;
 import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
-import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
+import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -22,13 +22,13 @@ public class SlashStats extends ApplicationCommand {
   /**
    * Handles the {@code /slash stats} command.
    *
-   * @param event the {@link GuildSlashEvent} that triggered this.
+   * @param event the {@link GlobalSlashEvent} that triggered this.
    */
   @JDASlashCommand(
       name = "growtopia",
       subcommand = "stats",
       description = "Gets data about the game's server stats.")
-  public void onSlashStats(GuildSlashEvent event) {
+  public void onSlashStats(GlobalSlashEvent event) {
     var detail = client.getGrowtopiaDetail();
     if (detail == null) {
       event

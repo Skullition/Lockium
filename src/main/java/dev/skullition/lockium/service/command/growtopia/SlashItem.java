@@ -7,7 +7,7 @@ import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocom
 import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
-import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
+import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
@@ -16,6 +16,8 @@ import java.util.Collection;
 import java.util.Optional;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,23 +25,23 @@ import org.jetbrains.annotations.Nullable;
 @Command
 public class SlashItem extends ApplicationCommand {
   private static final String ITEM_AUTOCOMPLETE_NAME = "SlashItem: item";
-  private final GrowtopiaWikiClient proxy;
+  private final GrowtopiaWikiClient client;
   private final EmbedStarterSupplier embedStarterSupplier;
   private final GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier;
 
   /**
    * Command to handle obtaining item data information.
    *
-   * @param proxy wiki proxy, to get data from the Growtopia wiki.
+   * @param client wiki client, to get data from the Growtopia wiki.
    * @param embedStarterSupplier the embed starter, used to prevent duplicate code.
    * @param itemAutocompleteSupplier the item autocomplete supplier, used to get the list of items
    *     to autocomplete from.
    */
   public SlashItem(
-      final GrowtopiaWikiClient proxy,
+      final GrowtopiaWikiClient client,
       EmbedStarterSupplier embedStarterSupplier,
       GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier) {
-    this.proxy = proxy;
+    this.client = client;
     this.embedStarterSupplier = embedStarterSupplier;
     this.itemAutocompleteSupplier = itemAutocompleteSupplier;
   }
@@ -48,17 +50,24 @@ public class SlashItem extends ApplicationCommand {
    * Handles the {@code /growtopia item} slash command. Retrieves item data either from the
    * Growtopia Wiki or internally based on the user's choice.
    *
-   * @param event the {@link GuildSlashEvent} representing the slash command interaction
+   * @param event the {@link GlobalSlashEvent} representing the slash command interaction
    * @param itemAutocomplete the name of the item to retrieve data for
    * @param shouldGetDataFromWiki whether the data should be fetched from the wiki or internally
    */
-  @TopLevelSlashCommandData(description = "Slash commands related to Growtopia.")
+  @TopLevelSlashCommandData(
+      description = "Slash commands related to Growtopia.",
+      contexts = {
+        InteractionContextType.GUILD,
+        InteractionContextType.BOT_DM,
+        InteractionContextType.PRIVATE_CHANNEL
+      },
+      integrationTypes = {IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL})
   @JDASlashCommand(
       name = "growtopia",
       subcommand = "item",
       description = "Growtopia item data information.")
   public void onSlashItem(
-      GuildSlashEvent event,
+      GlobalSlashEvent event,
       @NotNull
           @SlashOption(
               name = "item_name",
@@ -91,8 +100,8 @@ public class SlashItem extends ApplicationCommand {
         .toList();
   }
 
-  private void getDataFromWiki(GuildSlashEvent event, @NotNull String itemName) {
-    Optional<GrowtopiaItem> result = proxy.getItemData(itemName);
+  private void getDataFromWiki(GlobalSlashEvent event, @NotNull String itemName) {
+    Optional<GrowtopiaItem> result = client.getItemData(itemName);
     if (result.isEmpty()) {
       event.reply("No item found with name `" + itemName + "`. [404]").queue();
       return;

@@ -2,7 +2,7 @@ package dev.skullition.lockium.service.resolver;
 
 import dev.skullition.lockium.model.GrowtopiaItemAutocompleteCache;
 import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocompleteSupplier;
-import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption;
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.core.BotOwners;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
@@ -58,7 +58,7 @@ public class GrowtopiaItemAutocompleteCacheResolver
   @Nullable
   @Override
   public GrowtopiaItemAutocompleteCache resolve(
-      @NotNull SlashCommandOption option,
+      @NotNull SlashCommandInfo info,
       @NotNull CommandInteractionPayload event,
       @NotNull OptionMapping optionMapping) {
     if (owners.isOwner(event.getUser())) {

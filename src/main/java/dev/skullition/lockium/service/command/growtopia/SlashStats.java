@@ -7,12 +7,16 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.springframework.beans.factory.annotation.Value;
 
 /** Command to show Growtopia related stats, such as current online users and current WOTD. */
 @Command
 public class SlashStats extends ApplicationCommand {
   private final GrowtopiaDetailClient client;
   private final EmbedStarterSupplier embedStarterSupplier;
+
+  @Value("${growtopia.render-url}")
+  private String renderUrl;
 
   public SlashStats(GrowtopiaDetailClient client, EmbedStarterSupplier embedStarterSupplier) {
     this.client = client;
@@ -36,12 +40,15 @@ public class SlashStats extends ApplicationCommand {
           .queue();
       return;
     }
+    String wotd = detail.wotd().fullSize().substring(7);
+    int dotIndex = wotd.indexOf(".");
 
     MessageEmbed embed =
         embedStarterSupplier
             .get(event)
             .addField("Online Users:", detail.onlineUsers(), false)
-            .addField("WOTD:", detail.wotd().fullSize(), false)
+            .addField("WOTD:", wotd.substring(0, dotIndex).toUpperCase(), false)
+            .setImage(renderUrl + wotd.toLowerCase())
             .build();
     event.replyEmbeds(embed).queue();
   }

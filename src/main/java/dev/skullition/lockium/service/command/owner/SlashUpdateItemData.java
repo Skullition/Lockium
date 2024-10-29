@@ -11,32 +11,30 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
+import io.github.freya022.botcommands.api.core.BotOwners;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 /** Command to update item description based on attached file. */
 @Command
 public class SlashUpdateItemData extends ApplicationCommand {
   private static final Logger logger = LoggerFactory.getLogger(SlashUpdateItemData.class);
   private final GrowtopiaWikiClient proxy;
+  private final BotOwners owners;
 
-  @Value("${botcommands.core.predefined-owner-ids}")
-  private Set<Long> owners;
-
-  public SlashUpdateItemData(GrowtopiaWikiClient proxy) {
+  public SlashUpdateItemData(GrowtopiaWikiClient proxy, BotOwners owners) {
     this.proxy = proxy;
+    this.owners = owners;
   }
 
   /**
@@ -58,7 +56,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
       GuildSlashEvent event,
       @NotNull @SlashOption(name = "file", description = "File to update from")
           Message.Attachment attachment) {
-    if (!owners.contains(event.getUser().getIdLong())) {
+    if (!owners.isOwner(event.getUser())) {
       logger.warn(
           "{} tried to execute {} without enough privilege",
           event.getUser(),

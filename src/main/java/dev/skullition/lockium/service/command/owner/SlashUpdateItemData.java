@@ -1,8 +1,7 @@
 package dev.skullition.lockium.service.command.owner;
 
 import dev.skullition.lockium.client.GrowtopiaWikiClient;
-import dev.skullition.lockium.model.GrowtopiaItem;
-import dev.skullition.lockium.model.ItemEffects;
+import dev.skullition.lockium.model.GrowtopiaWikiItem;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.CommandScope;
@@ -99,7 +98,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
           return Collections.emptyList();
         }
 
-        GrowtopiaItem item = result.get();
+        GrowtopiaWikiItem item = result.get();
 
         descriptionSb.append("// ").append(itemName).append("\n");
         descriptionSb.append(itemId).append("|").append(item.description()).append("\n");
@@ -109,7 +108,7 @@ public class SlashUpdateItemData extends ApplicationCommand {
         chiSb.append(itemId).append("|").append(item.itemField().chi()).append("\n");
         chiSb.append("\n");
 
-        ItemEffects effects = item.itemEffects();
+        var effects = item.itemEffects();
         if (effects == null) {
           logger.debug("Skipping {} as it is not an item with effects.", itemName);
         } else {

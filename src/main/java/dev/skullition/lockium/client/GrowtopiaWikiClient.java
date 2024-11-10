@@ -1,9 +1,7 @@
 package dev.skullition.lockium.client;
 
 import dev.skullition.lockium.builder.GrowtopiaItemFieldBuilder;
-import dev.skullition.lockium.model.GrowtopiaItem;
-import dev.skullition.lockium.model.GrowtopiaItemField;
-import dev.skullition.lockium.model.ItemEffects;
+import dev.skullition.lockium.model.GrowtopiaWikiItem;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,7 @@ public class GrowtopiaWikiClient {
    * @return a {@link Optional} that could contain the queried item data, returns empty optional if
    *     item is not found.
    */
-  public Optional<GrowtopiaItem> getItemData(@NotNull String itemName) {
+  public Optional<GrowtopiaWikiItem> getItemData(@NotNull String itemName) {
     logger.debug("Fetching item data for {}", itemName);
     String resolvedItemName = getWikiItemName(itemName);
     String itemWikiUrl = wikiUrl + resolvedItemName;
@@ -94,7 +92,7 @@ public class GrowtopiaWikiClient {
         default -> logger.error("Unknown cell header {}", cellHeader);
       }
     }
-    GrowtopiaItemField itemField = builder.build();
+    GrowtopiaWikiItem.GrowtopiaItemField itemField = builder.build();
     logger.debug("Item field for {} is {}", itemName, itemField);
 
     Optional<String> optionalOnUse =
@@ -104,19 +102,19 @@ public class GrowtopiaWikiClient {
     Optional<String> optionalEffect =
         getParentElementChildItemModText(document.selectFirst("a[href=\"/wiki/Mods\"]"));
 
-    ItemEffects itemEffects;
+    GrowtopiaWikiItem.ItemEffects itemEffects;
     if (optionalOnUse.isEmpty() || optionalOnRemoving.isEmpty() || optionalEffect.isEmpty()) {
       itemEffects = null;
     } else {
       String onUseText = optionalOnUse.get();
       String onRemovingText = optionalOnRemoving.get();
       String itemMod = optionalEffect.get();
-      itemEffects = new ItemEffects(onUseText, onRemovingText, itemMod);
+      itemEffects = new GrowtopiaWikiItem.ItemEffects(onUseText, onRemovingText, itemMod);
     }
     logger.debug("Item effect for {} is {}", itemName, itemEffects);
 
     return Optional.of(
-        new GrowtopiaItem(
+        new GrowtopiaWikiItem(
             spriteUrl, itemWikiUrl, rarity, description, properties, itemField, itemEffects));
   }
 

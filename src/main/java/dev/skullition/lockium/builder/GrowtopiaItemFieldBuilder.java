@@ -1,7 +1,11 @@
 package dev.skullition.lockium.builder;
 
-import dev.skullition.lockium.model.GrowtopiaItemField;
+import dev.skullition.lockium.model.GrowtopiaWikiItem;
 
+/**
+ * Builder to create an instance of {@link
+ * dev.skullition.lockium.model.GrowtopiaWikiItem.GrowtopiaItemField}.
+ */
 public class GrowtopiaItemFieldBuilder {
   private String type;
   private String chi;
@@ -16,8 +20,8 @@ public class GrowtopiaItemFieldBuilder {
     this.type = type;
   }
 
-  public GrowtopiaItemField build() {
-    return new GrowtopiaItemField(
+  public GrowtopiaWikiItem.GrowtopiaItemField build() {
+    return new GrowtopiaWikiItem.GrowtopiaItemField(
         type, chi, textureType, collisionType, hitsToBreak, seedColor, growTime, gems);
   }
 

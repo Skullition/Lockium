@@ -1,8 +1,9 @@
 package dev.skullition.lockium.service.command.growtopia;
 
 import dev.skullition.lockium.client.GrowtopiaWikiClient;
-import dev.skullition.lockium.model.GrowtopiaItem;
+import dev.skullition.lockium.client.SinisterClient;
 import dev.skullition.lockium.model.GrowtopiaItemAutocompleteCache;
+import dev.skullition.lockium.model.GrowtopiaWikiItem;
 import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocompleteSupplier;
 import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
@@ -25,7 +26,8 @@ import org.jetbrains.annotations.Nullable;
 @Command
 public class SlashItem extends ApplicationCommand {
   private static final String ITEM_AUTOCOMPLETE_NAME = "SlashItem: item";
-  private final GrowtopiaWikiClient client;
+  private final GrowtopiaWikiClient wikiClient;
+  private final SinisterClient sinisterClient;
   private final EmbedStarterSupplier embedStarterSupplier;
   private final GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier;
 
@@ -39,9 +41,11 @@ public class SlashItem extends ApplicationCommand {
    */
   public SlashItem(
       final GrowtopiaWikiClient client,
+      SinisterClient sinisterClient,
       EmbedStarterSupplier embedStarterSupplier,
       GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier) {
-    this.client = client;
+    this.wikiClient = client;
+    this.sinisterClient = sinisterClient;
     this.embedStarterSupplier = embedStarterSupplier;
     this.itemAutocompleteSupplier = itemAutocompleteSupplier;
   }
@@ -84,7 +88,7 @@ public class SlashItem extends ApplicationCommand {
       return;
     }
     // TODO: Get data internally
-    event.reply(itemAutocomplete.toString()).queue();
+    event.reply(sinisterClient.getGrowtopiaItemById(itemAutocomplete.id()).toString()).queue();
   }
 
   /**
@@ -101,12 +105,12 @@ public class SlashItem extends ApplicationCommand {
   }
 
   private void getDataFromWiki(GlobalSlashEvent event, @NotNull String itemName) {
-    Optional<GrowtopiaItem> result = client.getItemData(itemName);
+    Optional<GrowtopiaWikiItem> result = wikiClient.getItemData(itemName);
     if (result.isEmpty()) {
       event.reply("No item found with name `" + itemName + "`. [404]").queue();
       return;
     }
-    GrowtopiaItem item = result.get();
+    GrowtopiaWikiItem item = result.get();
     MessageEmbed embed =
         embedStarterSupplier
             .get(event)

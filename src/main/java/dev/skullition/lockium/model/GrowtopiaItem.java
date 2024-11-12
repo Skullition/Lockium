@@ -5,14 +5,18 @@ import dev.skullition.lockium.deserializer.ItemPropertyDeserializer;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
+/** DTO to store internal Sinister item response. */
 public record GrowtopiaItem(
     int id,
-    String description,
+    @NotNull String name,
+    @NotNull String description,
     @JsonDeserialize(using = ItemPropertyDeserializer.class) EnumSet<ItemProperty> properties) {
+  /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
-    WRENCH_ABLE(0x02),
+    WRENCHABLE(0x02),
     NO_SEED(0x04),
     PERMANENT(0x08),
     NO_DROP(0x10),
@@ -34,6 +38,12 @@ public record GrowtopiaItem(
       this.value = flag;
     }
 
+    /**
+     * Convert an int flag to a {@link EnumSet} of {@link ItemProperty}.
+     *
+     * @param flags the int flags.
+     * @return an EnumSet of ItemProperties.
+     */
     public static EnumSet<ItemProperty> fromInt(int flags) {
       return Arrays.stream(values())
           .filter(property -> (flags & property.value) != 0)

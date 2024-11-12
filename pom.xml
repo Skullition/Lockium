@@ -69,7 +69,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>f5840dab04</version>
+            <version>e88cfadcb89bfe0b3710e25d8d1a4400c5c9cb05</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>

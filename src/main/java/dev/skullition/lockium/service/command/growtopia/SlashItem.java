@@ -2,6 +2,7 @@ package dev.skullition.lockium.service.command.growtopia;
 
 import dev.skullition.lockium.client.GrowtopiaWikiClient;
 import dev.skullition.lockium.client.SinisterClient;
+import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.model.GrowtopiaItemAutocompleteCache;
 import dev.skullition.lockium.model.GrowtopiaWikiItem;
 import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocompleteSupplier;
@@ -15,12 +16,14 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import java.util.Collection;
 import java.util.Optional;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.util.StringUtils;
 
 /** Command to get Growtopia item data information. */
 @Command
@@ -87,8 +90,28 @@ public class SlashItem extends ApplicationCommand {
       getDataFromWiki(event, itemAutocomplete.name());
       return;
     }
-    // TODO: Get data internally
-    event.reply(sinisterClient.getGrowtopiaItemById(itemAutocomplete.id()).toString()).queue();
+
+    EmbedBuilder embedBuilder = embedStarterSupplier.get(event);
+
+    GrowtopiaItem itemData = sinisterClient.getGrowtopiaItemById(itemAutocomplete.id());
+    String releaseDateInfo =
+        StringUtils.hasText(itemData.releaseDateInfo())
+            ? "*Item released " + itemData.releaseDateInfo() + "*"
+            : "";
+    if (itemData.type() == GrowtopiaItem.ItemType.SEED) {
+      embedBuilder.setDescription(
+          releaseDateInfo
+              + " *Plant this seed to grow a "
+              + itemAutocompleteSupplier.getMap().get(itemData.id() - 1).name()
+              + " Tree.*");
+    } else {
+      String description =
+          StringUtils.hasText(itemData.description())
+              ? itemData.description()
+              : "*Description missing, report to bot owners if you have it!*";
+      embedBuilder.setDescription(releaseDateInfo + "\n " + description);
+    }
+    event.replyEmbeds(embedBuilder.build()).queue();
   }
 
   /**
@@ -100,6 +123,7 @@ public class SlashItem extends ApplicationCommand {
   @AutocompleteHandler(ITEM_AUTOCOMPLETE_NAME)
   public Collection<String> onItemAutocomplete(CommandAutoCompleteInteractionEvent event) {
     return itemAutocompleteSupplier.getList().stream()
+        .filter(item -> !item.isSeed())
         .map(GrowtopiaItemAutocompleteCache::name)
         .toList();
   }

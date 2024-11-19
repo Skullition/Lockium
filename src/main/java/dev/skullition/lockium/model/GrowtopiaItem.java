@@ -7,18 +7,20 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /** DTO to store internal Sinister item response. */
 public record GrowtopiaItem(
     int id,
     @NotNull String name,
-    @NotNull String description,
+    @Nullable String description,
     @JsonDeserialize(using = ItemPropertyDeserializer.class) EnumSet<ItemProperty> properties,
     @NotNull ItemType type,
     int health,
     int secondsToHeal,
     int rarity,
-    ItemClothingType clothingType) {
+    ItemClothingType clothingType,
+    @Nullable String releaseDateInfo) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),

@@ -3,7 +3,6 @@ package dev.skullition.lockium.deserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
 import dev.skullition.lockium.model.GrowtopiaItem;
 import java.io.IOException;
 import java.util.Set;
@@ -67,8 +66,7 @@ public class ItemPropertyDeserializer extends JsonDeserializer<Set<GrowtopiaItem
   @Override
   public Set<GrowtopiaItem.ItemProperty> deserialize(
       JsonParser parser, DeserializationContext context) throws IOException {
-    JsonNode node = parser.getCodec().readTree(parser);
-    int flags = node.asInt();
+    int flags = parser.getValueAsInt();
     return GrowtopiaItem.ItemProperty.fromInt(flags);
   }
 }

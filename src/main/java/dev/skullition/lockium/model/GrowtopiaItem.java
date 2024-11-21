@@ -19,8 +19,9 @@ public record GrowtopiaItem(
     int health,
     int secondsToHeal,
     int rarity,
-    ItemClothingType clothingType,
-    @Nullable String releaseDateInfo) {
+    @Nullable ItemClothingType clothingType,
+    @Nullable String releaseDateInfo,
+    @Nullable ItemEffect itemEffect) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
@@ -221,4 +222,15 @@ public record GrowtopiaItem(
       return values()[index];
     }
   }
+
+  /**
+   * Record to store effects when a player uses an item with effects (null if item does not give
+   * effects).
+   *
+   * @param name player mod obtained when a player uses an item with an effect.
+   * @param onUseMessage message shown when a player uses an item with an effect.
+   * @param onRemoveMessage message shown when a player removes an item with an effect.
+   */
+  public record ItemEffect(
+          @NotNull String name, @NotNull String onUseMessage, @NotNull String onRemoveMessage) {}
 }

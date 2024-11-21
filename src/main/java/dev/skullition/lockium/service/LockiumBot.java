@@ -2,6 +2,7 @@ package dev.skullition.lockium.service;
 
 import dev.skullition.lockium.config.SecretsConfig;
 import io.github.freya022.botcommands.api.core.JDAService;
+import io.github.freya022.botcommands.api.core.config.JDAConfiguration;
 import io.github.freya022.botcommands.api.core.events.BReadyEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import java.util.Set;
@@ -17,35 +18,25 @@ import org.slf4j.LoggerFactory;
 @BService
 public class LockiumBot extends JDAService {
   private static final Logger logger = LoggerFactory.getLogger(LockiumBot.class);
-  private final SecretsConfig secretsConfig;
+  @NotNull private final SecretsConfig secretsConfig;
+  @NotNull private final JDAConfiguration jdaConfiguration;
 
-  public LockiumBot(@NotNull SecretsConfig secretsConfig) {
+  public LockiumBot(
+      @NotNull SecretsConfig secretsConfig, @NotNull JDAConfiguration jdaConfiguration) {
     this.secretsConfig = secretsConfig;
+    this.jdaConfiguration = jdaConfiguration;
   }
 
   @NotNull
   @Override
   public Set<GatewayIntent> getIntents() {
-    return Set.of(
-        GatewayIntent.GUILD_MODERATION,
-        GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
-        GatewayIntent.GUILD_INVITES,
-        GatewayIntent.GUILD_VOICE_STATES,
-        GatewayIntent.GUILD_MESSAGES,
-        GatewayIntent.GUILD_MESSAGE_REACTIONS,
-        GatewayIntent.DIRECT_MESSAGES,
-        GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-        GatewayIntent.SCHEDULED_EVENTS,
-        GatewayIntent.AUTO_MODERATION_CONFIGURATION,
-        GatewayIntent.AUTO_MODERATION_EXECUTION,
-        GatewayIntent.GUILD_MESSAGE_POLLS,
-        GatewayIntent.DIRECT_MESSAGE_POLLS);
+    return jdaConfiguration.getIntents();
   }
 
   @NotNull
   @Override
   public Set<CacheFlag> getCacheFlags() {
-    return Set.of();
+    return jdaConfiguration.getCacheFlags();
   }
 
   @Override

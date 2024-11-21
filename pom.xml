@@ -67,9 +67,9 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.dv8tion/JDA -->
         <dependency>
-            <groupId>io.github.freya022</groupId>
+            <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>e88cfadcb89bfe0b3710e25d8d1a4400c5c9cb05</version>
+            <version>641d18d3b3</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -88,6 +88,11 @@
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.18.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

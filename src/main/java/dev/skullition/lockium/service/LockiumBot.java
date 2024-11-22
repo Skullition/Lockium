@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** Class to configure JDA, using {@link JDAService} and {@link JDAConfiguration}. */
 @BService
 public class LockiumBot extends JDAService {
   private static final Logger logger = LoggerFactory.getLogger(LockiumBot.class);

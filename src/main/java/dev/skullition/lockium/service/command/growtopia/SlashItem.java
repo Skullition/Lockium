@@ -111,6 +111,27 @@ public class SlashItem extends ApplicationCommand {
               : "*Description missing, report to bot owners if you have it!*";
       embedBuilder.setDescription(releaseDateInfo + "\n " + description);
     }
+
+    if (itemData.itemEffect() != null) {
+      String missingEffectText = "(Missing! Report if you have it!)";
+      String onAdd =
+          StringUtils.hasText(itemData.itemEffect().onUseMessage())
+              ? itemData.itemEffect().onUseMessage()
+              : missingEffectText;
+      String onRemove =
+          StringUtils.hasText(itemData.itemEffect().onRemoveMessage())
+              ? itemData.itemEffect().onRemoveMessage()
+              : missingEffectText;
+      embedBuilder.addField(
+          "Item Effect (%s)".formatted(itemData.itemEffect().name()),
+          """
+          ☑️ %s
+          ❌ %s
+          """
+              .formatted(onAdd, onRemove),
+          false);
+    }
+
     event.replyEmbeds(embedBuilder.build()).queue();
   }
 

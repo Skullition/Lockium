@@ -96,20 +96,25 @@ public class SlashItem extends ApplicationCommand {
     GrowtopiaItem itemData = sinisterClient.getGrowtopiaItemById(itemAutocomplete.id());
     String releaseDateInfo =
         StringUtils.hasText(itemData.releaseDateInfo())
-            ? "*Item released " + itemData.releaseDateInfo() + "*"
+            ? "*Item released %s*".formatted(itemData.releaseDateInfo())
             : "";
     if (itemData.type() == GrowtopiaItem.ItemType.SEED) {
       embedBuilder.setDescription(
-          releaseDateInfo
-              + " *Plant this seed to grow a "
-              + itemAutocompleteSupplier.getMap().get(itemData.id() - 1).name()
-              + " Tree.*");
+          " *Plant this seed to grow a %s Tree.*"
+              .formatted(itemAutocompleteSupplier.getMap().get(itemData.id() - 1).name()));
     } else {
       String description =
           StringUtils.hasText(itemData.description())
               ? itemData.description()
               : "*Description missing, report to bot owners if you have it!*";
       embedBuilder.setDescription(releaseDateInfo + "\n " + description);
+      embedBuilder.setDescription(
+          """
+          %s
+          
+          %s
+          """
+              .formatted(releaseDateInfo, description));
     }
 
     if (itemData.itemEffect() != null) {

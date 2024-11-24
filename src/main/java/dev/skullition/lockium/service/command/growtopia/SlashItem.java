@@ -5,6 +5,7 @@ import dev.skullition.lockium.client.SinisterClient;
 import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.model.GrowtopiaItemAutocompleteCache;
 import dev.skullition.lockium.model.GrowtopiaWikiItem;
+import dev.skullition.lockium.service.supplier.ApplicationEmojiSupplier;
 import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocompleteSupplier;
 import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
@@ -33,6 +34,7 @@ public class SlashItem extends ApplicationCommand {
   private final SinisterClient sinisterClient;
   private final EmbedStarterSupplier embedStarterSupplier;
   private final GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier;
+  private final ApplicationEmojiSupplier emojiSupplier;
 
   /**
    * Command to handle obtaining item data information.
@@ -41,16 +43,20 @@ public class SlashItem extends ApplicationCommand {
    * @param embedStarterSupplier the embed starter, used to prevent duplicate code.
    * @param itemAutocompleteSupplier the item autocomplete supplier, used to get the list of items
    *     to autocomplete from.
+   * @param sinisterClient Sinister client, to get data internally.
+   * @param applicationEmojiSupplier used to obtain ApplicationEmoji instances.
    */
   public SlashItem(
       final GrowtopiaWikiClient client,
       SinisterClient sinisterClient,
       EmbedStarterSupplier embedStarterSupplier,
-      GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier) {
+      GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier,
+      ApplicationEmojiSupplier applicationEmojiSupplier) {
     this.wikiClient = client;
     this.sinisterClient = sinisterClient;
     this.embedStarterSupplier = embedStarterSupplier;
     this.itemAutocompleteSupplier = itemAutocompleteSupplier;
+    this.emojiSupplier = applicationEmojiSupplier;
   }
 
   /**
@@ -96,7 +102,8 @@ public class SlashItem extends ApplicationCommand {
     GrowtopiaItem itemData = sinisterClient.getGrowtopiaItemById(itemAutocomplete.id());
     String releaseDateInfo =
         StringUtils.hasText(itemData.releaseDateInfo())
-            ? "*Item released %s*".formatted(itemData.releaseDateInfo())
+            ? "%s *Item released %s*"
+                .formatted(emojiSupplier.getEmojiByName("tickingClock"), itemData.releaseDateInfo())
             : "";
     if (itemData.type() == GrowtopiaItem.ItemType.SEED) {
       embedBuilder.setDescription(
@@ -128,12 +135,17 @@ public class SlashItem extends ApplicationCommand {
               ? itemData.itemEffect().onRemoveMessage()
               : missingEffectText;
       embedBuilder.addField(
-          "Item Effect (%s)".formatted(itemData.itemEffect().name()),
+          "%s Item Effect (%s)"
+              .formatted(emojiSupplier.getEmojiByName("fairyWings"), itemData.itemEffect().name()),
           """
-          ☑️ %s
-          ❌ %s
+          %s %s
+          %s %s
           """
-              .formatted(onAdd, onRemove),
+              .formatted(
+                  emojiSupplier.getEmojiByName("checkboxEnabled"),
+                  onAdd,
+                  emojiSupplier.getEmojiByName("checkboxDisabled"),
+                  onRemove),
           false);
     }
 

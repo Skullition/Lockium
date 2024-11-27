@@ -99,6 +99,8 @@ public class SlashItem extends ApplicationCommand {
     }
 
     EmbedBuilder embedBuilder = embedStarterSupplier.get(event);
+    embedBuilder.setFooter(
+        "See anything missing/incorrect? Report with /report !", event.getUser().getAvatarUrl());
 
     GrowtopiaItem itemData = sinisterClient.getGrowtopiaItemById(itemAutocomplete.id());
     String releaseDateInfo =

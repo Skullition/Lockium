@@ -2,6 +2,7 @@ package dev.skullition.lockium.client;
 
 import dev.skullition.lockium.builder.GrowtopiaItemFieldBuilder;
 import dev.skullition.lockium.model.GrowtopiaWikiItem;
+import dev.skullition.lockium.util.ItemUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class GrowtopiaWikiClient {
    */
   public Optional<GrowtopiaWikiItem> getItemData(@NotNull String itemName) {
     logger.debug("Fetching item data for {}", itemName);
-    String resolvedItemName = getWikiItemName(itemName);
+    String resolvedItemName = ItemUtils.getWikiItemName(itemName);
     String itemWikiUrl = wikiUrl + resolvedItemName;
     Document document;
     try {
@@ -129,11 +130,6 @@ public class GrowtopiaWikiClient {
         .map(Element::parent)
         .map(node -> node.selectFirst("i"))
         .map(Element::text);
-  }
-
-  @NotNull
-  private String getWikiItemName(@NotNull String itemName) {
-    return itemName.replaceAll(" ", "_");
   }
 
   @NotNull

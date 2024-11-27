@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 /** Command to get Growtopia item data information. */
@@ -36,6 +37,9 @@ public class SlashItem extends ApplicationCommand {
   private final EmbedStarterSupplier embedStarterSupplier;
   private final GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier;
   private final ApplicationEmojiSupplier emojiSupplier;
+
+  @Value("${growtopia.wiki-url}")
+  private String wikiUrl;
 
   /**
    * Command to handle obtaining item data information.
@@ -103,6 +107,17 @@ public class SlashItem extends ApplicationCommand {
         "See anything missing/incorrect? Report with /report !", event.getUser().getAvatarUrl());
 
     GrowtopiaItem itemData = sinisterClient.getGrowtopiaItemById(itemAutocomplete.id());
+
+    String itemWikiUrl = wikiUrl + ItemUtils.getWikiItemName(itemData.name());
+    embedBuilder.setTitle(itemWikiUrl);
+    embedBuilder.setThumbnail(itemData.wikiItemSprite());
+    embedBuilder.setAuthor(
+        "Item info for %s".formatted(itemData.name()), itemWikiUrl, itemData.wikiSeedSprite());
+    embedBuilder.setColor(itemData.baseColor());
+
+    if (StringUtils.hasText(itemData.extraNote())) {
+      embedBuilder.addField("Extra Item Notes", itemData.extraNote(), false);
+    }
     String releaseDateInfo =
         StringUtils.hasText(itemData.releaseDateInfo())
             ? "%s *Item released %s*"

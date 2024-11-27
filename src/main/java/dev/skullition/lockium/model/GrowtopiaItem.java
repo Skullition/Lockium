@@ -23,7 +23,10 @@ public record GrowtopiaItem(
     @Nullable ItemClothingType clothingType,
     @Nullable String releaseDateInfo,
     @Nullable ItemEffect itemEffect,
-    @Nullable PetBattleAbility pbAbility) {
+    @Nullable PetBattleAbility pbAbility,
+    @Nullable String extraNote,
+    @NotNull String wikiItemSprite,
+    @NotNull String wikiSeedSprite, int baseColor) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),

@@ -21,7 +21,8 @@ public record GrowtopiaItem(
     int rarity,
     @Nullable ItemClothingType clothingType,
     @Nullable String releaseDateInfo,
-    @Nullable ItemEffect itemEffect) {
+    @Nullable ItemEffect itemEffect,
+    @Nullable PetBattleAbility pbAbility) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
@@ -232,5 +233,15 @@ public record GrowtopiaItem(
    * @param onRemoveMessage message shown when a player removes an item with an effect.
    */
   public record ItemEffect(
-          @NotNull String name, @NotNull String onUseMessage, @NotNull String onRemoveMessage) {}
+      @NotNull String name, @NotNull String onUseMessage, @NotNull String onRemoveMessage) {}
+
+  // NOTE: Might need to escape abilityName
+  /** Record to store abilities of pets that can be used in Pet Battle. */
+  public record PetBattleAbility(
+      @NotNull String abilityName,
+      @NotNull String abilityDescription,
+      int cooldown,
+      @NotNull String petPrefix,
+      @NotNull String petSuffix,
+      @NotNull String elementType) {}
 }

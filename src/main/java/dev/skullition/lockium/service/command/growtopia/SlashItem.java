@@ -8,6 +8,7 @@ import dev.skullition.lockium.model.GrowtopiaWikiItem;
 import dev.skullition.lockium.service.supplier.ApplicationEmojiSupplier;
 import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocompleteSupplier;
 import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
+import dev.skullition.lockium.util.ItemUtils;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent;
@@ -118,7 +119,7 @@ public class SlashItem extends ApplicationCommand {
       embedBuilder.setDescription(
           """
           %s
-          
+
           %s
           """
               .formatted(releaseDateInfo, description));
@@ -146,6 +147,17 @@ public class SlashItem extends ApplicationCommand {
                   onAdd,
                   emojiSupplier.getEmojiByName("checkboxDisabled"),
                   onRemove),
+          false);
+    }
+
+    if (itemData.pbAbility() != null) {
+      var pbAbility = itemData.pbAbility();
+      embedBuilder.addField(
+          "%s Pet Battles".formatted(emojiSupplier.getEmojiByName("battleLeash")),
+          "%s %s"
+              .formatted(
+                  ItemUtils.stringChiToEmoji(pbAbility.elementType(), emojiSupplier),
+                  pbAbility.asFormattedString()),
           false);
     }
 

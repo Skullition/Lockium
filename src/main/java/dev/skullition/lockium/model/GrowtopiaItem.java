@@ -6,6 +6,7 @@ import dev.skullition.lockium.deserializer.ItemPropertyDeserializer;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -235,13 +236,29 @@ public record GrowtopiaItem(
   public record ItemEffect(
       @NotNull String name, @NotNull String onUseMessage, @NotNull String onRemoveMessage) {}
 
-  // NOTE: Might need to escape abilityName
   /** Record to store abilities of pets that can be used in Pet Battle. */
   public record PetBattleAbility(
       @NotNull String abilityName,
       @NotNull String abilityDescription,
-      int cooldown,
+      int powerCooldown,
       @NotNull String petPrefix,
       @NotNull String petSuffix,
-      @NotNull String elementType) {}
+      @NotNull String elementType) {
+    /**
+     * Formats this into a readable string.
+     *
+     * @return the formatted string
+     */
+    // NOTE: Might need to escape abilityName
+    @NotNull
+    @Contract(pure = true)
+    public String asFormattedString() {
+      return """
+             **%s**
+             %s
+             Cooldown: %ss
+             """
+          .formatted(abilityName, abilityDescription, powerCooldown);
+    }
+  }
 }

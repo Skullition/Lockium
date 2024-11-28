@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -28,11 +29,11 @@ import org.slf4j.LoggerFactory;
 @Command
 public class SlashUpdateItemData extends ApplicationCommand {
   private static final Logger logger = LoggerFactory.getLogger(SlashUpdateItemData.class);
-  private final GrowtopiaWikiClient proxy;
+  private final GrowtopiaWikiClient client;
   private final BotOwners owners;
 
-  public SlashUpdateItemData(GrowtopiaWikiClient proxy, BotOwners owners) {
-    this.proxy = proxy;
+  public SlashUpdateItemData(GrowtopiaWikiClient client, BotOwners owners) {
+    this.client = client;
     this.owners = owners;
   }
 
@@ -82,9 +83,9 @@ public class SlashUpdateItemData extends ApplicationCommand {
   }
 
   private List<FileUpload> processItemDescriptionsFromStream(InputStream stream) {
-    StringBuilder descriptionSb = new StringBuilder();
-    StringBuilder chiSb = new StringBuilder();
-    StringBuilder effectsSb = new StringBuilder();
+    var descriptionsSb = new StringBuilder();
+    var chiSb = new StringBuilder();
+    var effectsSb = new StringBuilder();
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
       for (String line = reader.readLine(); line != null; line = reader.readLine()) {
         String[] split = line.split("\\|");
@@ -92,47 +93,72 @@ public class SlashUpdateItemData extends ApplicationCommand {
         String itemId = split[0];
         String itemName = split[1];
         logger.debug("Getting item data of {} ({})", itemName, itemId);
-        var result = proxy.getItemData(itemName);
+        var result = client.getItemData(itemName);
         if (result.isEmpty()) {
           logger.error("Item {} not found while trying to look up wiki.", itemName);
           return Collections.emptyList();
         }
 
-        GrowtopiaWikiItem item = result.get();
+        GrowtopiaWikiItem wikiItem = result.get();
 
-        descriptionSb.append("// ").append(itemName).append("\n");
-        descriptionSb.append(itemId).append("|").append(item.description()).append("\n");
-        descriptionSb.append("\n");
+        buildItemDataSection(
+            itemName,
+            stringBuilder ->
+                stringBuilder
+                    .append(itemId)
+                    .append("|")
+                    .append(wikiItem.description())
+                    .append("\n"),
+            descriptionsSb);
+        buildItemDataSection(
+            itemName,
+            stringBuilder ->
+                stringBuilder
+                    .append(itemId)
+                    .append("|")
+                    .append(wikiItem.itemField().chi())
+                    .append("\n"),
+            chiSb);
 
-        chiSb.append("// ").append(itemName).append("\n");
-        chiSb.append(itemId).append("|").append(item.itemField().chi()).append("\n");
-        chiSb.append("\n");
-
-        var effects = item.itemEffects();
-        if (effects == null) {
+        var effectsData = wikiItem.itemEffects();
+        if (effectsData == null) {
           logger.debug("Skipping {} as it is not an item with effects.", itemName);
         } else {
-          effectsSb.append("// ").append(itemName).append("\n");
-          effectsSb
-              .append(itemId)
-              .append("|")
-              .append(effects.effect())
-              .append("|")
-              .append(effects.onUseText())
-              .append("|")
-              .append(effects.onRemoveText())
-              .append("\n");
-          effectsSb.append("\n");
+          buildItemDataSection(
+              itemName,
+              stringBuilder ->
+                  stringBuilder
+                      .append(itemId)
+                      .append("|")
+                      .append(effectsData.effect())
+                      .append("|")
+                      .append(effectsData.onUseText())
+                      .append("|")
+                      .append(effectsData.onRemoveText())
+                      .append("\n"),
+              effectsSb);
         }
       }
     } catch (IOException e) {
       logger.error("Couldn't read item data file", e);
       return Collections.emptyList();
     }
-    FileUpload descriptions =
-        FileUpload.fromData(descriptionSb.toString().getBytes(), "Item Descriptions.txt");
-    FileUpload chi = FileUpload.fromData(chiSb.toString().getBytes(), "Chi.txt");
-    FileUpload effects = FileUpload.fromData(effectsSb.toString().getBytes(), "Effects.txt");
-    return List.of(descriptions, chi, effects);
+    FileUpload descriptionsFile = createFileUpload(descriptionsSb, "Item Descriptions.txt");
+    FileUpload chisFile = createFileUpload(chiSb, "Chi.txt");
+    FileUpload effectsFile = createFileUpload(effectsSb, "Effects.txt");
+    return List.of(descriptionsFile, chisFile, effectsFile);
+  }
+
+  private void buildItemDataSection(
+      @NotNull String itemName,
+      @NotNull Consumer<StringBuilder> data,
+      @NotNull StringBuilder stringBuilder) {
+    stringBuilder.append("// ").append(itemName).append("\n");
+    data.accept(stringBuilder);
+    stringBuilder.append("\n");
+  }
+
+  private FileUpload createFileUpload(StringBuilder data, String fileName) {
+    return FileUpload.fromData(data.toString().getBytes(), fileName);
   }
 }

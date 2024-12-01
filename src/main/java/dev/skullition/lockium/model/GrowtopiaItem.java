@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.util.StringUtils;
 
 /** DTO to store internal Sinister item response. */
 public record GrowtopiaItem(
@@ -269,7 +270,24 @@ public record GrowtopiaItem(
 
   /** Record to store items that can be bought in-game in the store. */
   public record StoreItem(
-      CurrencyType currencyType, int price, float priceUsd, @Nullable String info) {
+          @NotNull CurrencyType currency, int price, float priceUsd, @Nullable String info) {
+    /**
+     * Formats this into a readable string.
+     *
+     * @return the formatted string
+     */
+    public String asFormattedString() {
+      var stringBuilder = new StringBuilder();
+      stringBuilder.append(
+          currency == CurrencyType.MONEY
+              ? "Costs $%s USD from the store.".formatted(price)
+              : "Costs %s %s from the store.".formatted(price, currency.toString()));
+      if (StringUtils.hasText(info)) {
+        stringBuilder.append(" (%s)".formatted(info));
+      }
+      return stringBuilder.toString();
+    }
+
     /** enum of available currency types. */
     public enum CurrencyType {
       GEMS,
@@ -279,6 +297,11 @@ public record GrowtopiaItem(
       @JsonCreator
       public static CurrencyType fromInt(int index) {
         return values()[index];
+      }
+
+      @Override
+      public String toString() {
+        return StringUtils.capitalize(name().toLowerCase());
       }
     }
   }

@@ -26,7 +26,9 @@ public record GrowtopiaItem(
     @Nullable PetBattleAbility pbAbility,
     @Nullable String extraNote,
     @NotNull String wikiItemSprite,
-    @NotNull String wikiSeedSprite, int baseColor) {
+    @NotNull String wikiSeedSprite,
+    int baseColor,
+    @Nullable StoreItem storeItem) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
@@ -262,6 +264,22 @@ public record GrowtopiaItem(
              Cooldown: %ss
              """
           .formatted(abilityName, abilityDescription, powerCooldown);
+    }
+  }
+
+  /** Record to store items that can be bought in-game in the store. */
+  public record StoreItem(
+      CurrencyType currencyType, int price, float priceUsd, @Nullable String info) {
+    /** enum of available currency types. */
+    public enum CurrencyType {
+      GEMS,
+      GROWTOKENS,
+      MONEY;
+
+      @JsonCreator
+      public static CurrencyType fromInt(int index) {
+        return values()[index];
+      }
     }
   }
 }

@@ -178,6 +178,22 @@ public class SlashItem extends ApplicationCommand {
           false);
     }
 
+    if (itemData.storeItem() != null) {
+      if (itemData.storeItem().currency() == GrowtopiaItem.StoreItem.CurrencyType.GEMS) {
+        embedBuilder.addField(
+            "%s From the Store".formatted(emojiSupplier.getEmojiByName("gems")),
+            itemData.storeItem().asFormattedString(),
+            false);
+      } else if (itemData.storeItem().currency()
+          == GrowtopiaItem.StoreItem.CurrencyType.GROWTOKENS) {
+        embedBuilder.addField(
+            "%s From the Store".formatted(emojiSupplier.getEmojiByName("growtoken")),
+            itemData.storeItem().asFormattedString(),
+            false);
+      }
+      // CurrencyType.MONEY is unimplemented
+    }
+
     event.replyEmbeds(embedBuilder.build()).queue();
   }
 

@@ -29,7 +29,8 @@ public record GrowtopiaItem(
     @NotNull String wikiItemSprite,
     @NotNull String wikiSeedSprite,
     int baseColor,
-    @Nullable StoreItem storeItem) {
+    @Nullable StoreItem storeItem,
+    @Nullable LockeItem lockeItem) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
@@ -270,7 +271,7 @@ public record GrowtopiaItem(
 
   /** Record to store items that can be bought in-game in the store. */
   public record StoreItem(
-          @NotNull CurrencyType currency, int price, float priceUsd, @Nullable String info) {
+      @NotNull CurrencyType currency, int price, float priceUsd, @Nullable String info) {
     /**
      * Formats this into a readable string.
      *
@@ -305,4 +306,14 @@ public record GrowtopiaItem(
       }
     }
   }
+
+  /**
+   * Record to store items that can be found in Locke, the traveling merchant.
+   *
+   * @param itemToBuy the item which is the currency of this item in Locke's trade
+   * @param cost the price of the item
+   * @param canBePurchasedFromLockBot whether the item is also found in LockBot's trades
+   */
+  public record LockeItem(
+      @NotNull SimpleGrowtopiaItem itemToBuy, int cost, boolean canBePurchasedFromLockBot) {}
 }

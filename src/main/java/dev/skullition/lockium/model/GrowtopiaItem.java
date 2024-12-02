@@ -315,5 +315,36 @@ public record GrowtopiaItem(
    * @param canBePurchasedFromLockBot whether the item is also found in LockBot's trades
    */
   public record LockeItem(
-      @NotNull SimpleGrowtopiaItem itemToBuy, int cost, boolean canBePurchasedFromLockBot) {}
+      @NotNull SimpleGrowtopiaItem itemToBuy, int cost, boolean canBePurchasedFromLockBot) {
+    /**
+     * Formats this into a readable string.
+     *
+     * @return the formatted string
+     */
+    public String asFormattedString() {
+      var stringBuilder = new StringBuilder();
+      // if item is world lock
+      if (itemToBuy.id() == 242) {
+        if (cost > 100) {
+          int remaining = cost % 100;
+
+          stringBuilder.append("For %s Diamond Locks".formatted(cost / 100));
+          if (remaining > 0) {
+            stringBuilder.append("and %s World Locks".formatted(remaining));
+          }
+          return stringBuilder.toString();
+        }
+        stringBuilder.append("For %s World Lock%s".formatted(cost, cost == 1 ? "" : "s"));
+      } else {
+        stringBuilder.append("For %s %s".formatted(cost, itemToBuy.name()));
+      }
+
+      if (canBePurchasedFromLockBot) {
+        stringBuilder.append(". Available from Lock-Bot.");
+      } else {
+        stringBuilder.append(". Not available from Lock-Bot.");
+      }
+      return stringBuilder.toString();
+    }
+  }
 }

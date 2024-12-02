@@ -194,6 +194,13 @@ public class SlashItem extends ApplicationCommand {
       // CurrencyType.MONEY is unimplemented
     }
 
+    if (itemData.lockeItem() != null) {
+      embedBuilder.addField(
+          "%s From Locke".formatted(emojiSupplier.getEmojiByName("locke")),
+          itemData.lockeItem().asFormattedString(),
+          false);
+    }
+
     event.replyEmbeds(embedBuilder.build()).queue();
   }
 

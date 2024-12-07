@@ -201,6 +201,15 @@ public class SlashItem extends ApplicationCommand {
           false);
     }
 
+    if (itemData.guildChestReward() != null) {
+      embedBuilder.addField(
+          "%s Seasonal Guild Chest Reward"
+              .formatted(
+                  ItemUtils.seasonToEmoji(itemData.guildChestReward().season(), emojiSupplier)),
+          itemData.guildChestReward().asFormattedString(),
+          false);
+    }
+
     event.replyEmbeds(embedBuilder.build()).queue();
   }
 

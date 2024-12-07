@@ -357,6 +357,29 @@ public record GrowtopiaItem(
       @NotNull PersonalTier personalChestTier,
       @NotNull GuildTier guildChestTier,
       @Nullable String extraNote) {
+    /**
+     * Formats this into a readable string.
+     *
+     * @return the formatted string
+     */
+    @NotNull
+    public String asFormattedString() {
+      var stringBuilder = new StringBuilder();
+
+      boolean isGuildChest = contribType == ChestContributionType.Guild;
+      String chestName = isGuildChest ? guildChestTier.toString() : personalChestTier.toString();
+      int tier = isGuildChest ? guildChestTier.value : personalChestTier.value;
+
+      stringBuilder.append(
+          "%sx from: %s %s's Reward (#%s %s)"
+              .formatted(quantityGiven, season, chestName, tier, contribType));
+      if (StringUtils.hasText(extraNote)) {
+        stringBuilder.append("\n");
+        stringBuilder.append(extraNote);
+      }
+      return stringBuilder.toString();
+    }
+
     /** Which season the chest is from. */
     public enum GuildSeason {
       Summer,

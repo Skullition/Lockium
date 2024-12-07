@@ -31,7 +31,8 @@ public record GrowtopiaItem(
     int baseColor,
     @Nullable StoreItem storeItem,
     @Nullable LockeItem lockeItem,
-    @Nullable GuildChest guildChestReward) {
+    @Nullable GuildChest guildChestReward,
+    @Nullable DailyChallenge dailyChallengeReward) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
@@ -463,6 +464,37 @@ public record GrowtopiaItem(
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Invalid index: %s".formatted(index)));
       }
+    }
+  }
+
+  /**
+   * Record to store which daily challenge this item comes from.
+   *
+   * @param challengeName the challenge name
+   * @param challengeRules what rules the challenge has
+   * @param isGuildReward whether this item is a guild or personal reward
+   */
+  public record DailyChallenge(
+      @NotNull String challengeName, @NotNull String challengeRules, boolean isGuildReward) {
+    /**
+     * Formats this into a readable string.
+     *
+     * @return the formatted string
+     */
+    @NotNull
+    public String asFormattedString() {
+      if (isGuildReward) {
+        return """
+               Obtained from the %s guild daily challenge (Top 3 guilds).
+               Rules: %s
+               """
+            .formatted(challengeName, challengeRules);
+      }
+      return """
+               Obtained from the %s personal daily challenge (Top 3 personal).
+               Rules: %s
+               """
+          .formatted(challengeName, challengeRules);
     }
   }
 }

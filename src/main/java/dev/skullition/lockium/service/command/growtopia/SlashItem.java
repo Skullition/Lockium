@@ -210,6 +210,13 @@ public class SlashItem extends ApplicationCommand {
           false);
     }
 
+    if (itemData.dailyChallengeReward() != null) {
+      embedBuilder.addField(
+          "%s Daily Challenge Reward".formatted(emojiSupplier.getEmojiByName("challengeBoard")),
+          itemData.dailyChallengeReward().asFormattedString(),
+          false);
+    }
+
     event.replyEmbeds(embedBuilder.build()).queue();
   }
 

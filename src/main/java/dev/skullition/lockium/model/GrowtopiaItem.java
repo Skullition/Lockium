@@ -30,7 +30,8 @@ public record GrowtopiaItem(
     @NotNull String wikiSeedSprite,
     int baseColor,
     @Nullable StoreItem storeItem,
-    @Nullable LockeItem lockeItem) {
+    @Nullable LockeItem lockeItem,
+    @Nullable GuildChest guildChestReward) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
@@ -345,6 +346,100 @@ public record GrowtopiaItem(
         stringBuilder.append(". Not available from Lock-Bot.");
       }
       return stringBuilder.toString();
+    }
+  }
+
+  /** Record to store which guild chest this item comes from. */
+  public record GuildChest(
+      int quantityGiven,
+      @NotNull GuildSeason season,
+      @NotNull ChestContributionType contribType,
+      @NotNull PersonalTier personalChestTier,
+      @NotNull GuildTier guildChestTier,
+      @Nullable String extraNote) {
+    /** Which season the chest is from. */
+    public enum GuildSeason {
+      Summer,
+      Winter,
+      Spring;
+
+      @NotNull
+      @JsonCreator
+      public static GuildSeason fromInt(int index) {
+        return values()[index];
+      }
+    }
+
+    /** Whether this is obtained from the personal or guild reward. */
+    public enum ChestContributionType {
+      Personal,
+      Guild;
+
+      @NotNull
+      @JsonCreator
+      public static ChestContributionType fromInt(int index) {
+        return values()[index];
+      }
+    }
+
+    /** Enum to store which personal tier the chest is from. */
+    public enum PersonalTier {
+      None(0),
+      Student(5),
+      Trainer(10),
+      Contender(15),
+      Master(20),
+      Champion(25);
+      private final int value;
+
+      PersonalTier(int value) {
+        this.value = value;
+      }
+
+      /**
+       * Convert an int index to an instance of this enum.
+       *
+       * @param index the int index
+       * @return the personal tier enum
+       */
+      @NotNull
+      @JsonCreator
+      public static PersonalTier fromInt(int index) {
+        return Arrays.stream(values())
+            .filter(tier -> tier.value == index)
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid index: %s".formatted(index)));
+      }
+    }
+
+    /** Enum to store which guild tier the chest is from. */
+    public enum GuildTier {
+      None(0),
+      Squire(5),
+      Knight(10),
+      Noble(15),
+      King(20),
+      Emperor(25);
+      private final int value;
+
+      GuildTier(int value) {
+        this.value = value;
+      }
+
+      /**
+       * Convert an int index to an instance of this enum.
+       *
+       * @param index the int index
+       * @return the guild tier enum
+       */
+      @NotNull
+      @JsonCreator
+      public static GuildTier fromInt(int index) {
+        return Arrays.stream(values())
+            .filter(tier -> tier.value == index)
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid index: %s".formatted(index)));
+      }
     }
   }
 }

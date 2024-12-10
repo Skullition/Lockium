@@ -81,7 +81,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>12ea546ba0b29b744bf7943fcaf86db5a0ac0629</version>
+            <version>0e4c8a7ca71ab5366a1bd05d361ed43bd12a40db</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>

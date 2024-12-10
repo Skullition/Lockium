@@ -367,7 +367,7 @@ public record GrowtopiaItem(
     public String asFormattedString() {
       var stringBuilder = new StringBuilder();
 
-      boolean isGuildChest = contribType == ChestContributionType.Guild;
+      boolean isGuildChest = contribType == ChestContributionType.GUILD;
       String chestName = isGuildChest ? guildChestTier.toString() : personalChestTier.toString();
       int tier = isGuildChest ? guildChestTier.value : personalChestTier.value;
 
@@ -383,37 +383,47 @@ public record GrowtopiaItem(
 
     /** Which season the chest is from. */
     public enum GuildSeason {
-      Summer,
-      Winter,
-      Spring;
+      SUMMER,
+      WINTER,
+      SPRING;
 
       @NotNull
       @JsonCreator
       public static GuildSeason fromInt(int index) {
         return values()[index];
       }
+
+      @Override
+      public String toString() {
+        return StringUtils.capitalize(name().toLowerCase());
+      }
     }
 
     /** Whether this is obtained from the personal or guild reward. */
     public enum ChestContributionType {
-      Personal,
-      Guild;
+      PERSONAL,
+      GUILD;
 
       @NotNull
       @JsonCreator
       public static ChestContributionType fromInt(int index) {
         return values()[index];
       }
+
+      @Override
+      public String toString() {
+        return StringUtils.capitalize(name().toLowerCase());
+      }
     }
 
     /** Enum to store which personal tier the chest is from. */
     public enum PersonalTier {
-      None(0),
-      Student(5),
-      Trainer(10),
-      Contender(15),
-      Master(20),
-      Champion(25);
+      NONE(0),
+      STUDENT(5),
+      TRAINER(10),
+      CONTENDER(15),
+      MASTER(20),
+      CHAMPION(25);
       private final int value;
 
       PersonalTier(int value) {
@@ -434,16 +444,21 @@ public record GrowtopiaItem(
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Invalid index: %s".formatted(index)));
       }
+
+      @Override
+      public String toString() {
+        return StringUtils.capitalize(name().toLowerCase());
+      }
     }
 
     /** Enum to store which guild tier the chest is from. */
     public enum GuildTier {
-      None(0),
-      Squire(5),
-      Knight(10),
-      Noble(15),
-      King(20),
-      Emperor(25);
+      NONE(0),
+      SQUIRE(5),
+      KNIGHT(10),
+      NOBLE(15),
+      KING(20),
+      EMPEROR(25);
       private final int value;
 
       GuildTier(int value) {
@@ -463,6 +478,11 @@ public record GrowtopiaItem(
             .filter(tier -> tier.value == index)
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Invalid index: %s".formatted(index)));
+      }
+
+      @Override
+      public String toString() {
+        return StringUtils.capitalize(name().toLowerCase());
       }
     }
   }

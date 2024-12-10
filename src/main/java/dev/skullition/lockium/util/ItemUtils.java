@@ -40,9 +40,9 @@ public final class ItemUtils {
       @NotNull GrowtopiaItem.GuildChest.GuildSeason season,
       @NotNull ApplicationEmojiSupplier emojiSupplier) {
     return switch (season) {
-      case Summer -> emojiSupplier.getEmojiByName("summerChest");
-      case Winter -> emojiSupplier.getEmojiByName("winterChest");
-      case Spring -> emojiSupplier.getEmojiByName("springChest");
+      case SUMMER -> emojiSupplier.getEmojiByName("summerChest");
+      case WINTER -> emojiSupplier.getEmojiByName("winterChest");
+      case SPRING -> emojiSupplier.getEmojiByName("springChest");
     };
   }
 

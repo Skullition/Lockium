@@ -5,9 +5,9 @@ import dev.skullition.lockium.client.SinisterClient;
 import dev.skullition.lockium.model.GrowtopiaItem;
 import dev.skullition.lockium.model.GrowtopiaItemAutocompleteCache;
 import dev.skullition.lockium.model.GrowtopiaWikiItem;
-import dev.skullition.lockium.service.supplier.ApplicationEmojiSupplier;
 import dev.skullition.lockium.service.supplier.autocomplete.GrowtopiaItemAutocompleteSupplier;
 import dev.skullition.lockium.service.supplier.embed.EmbedStarterSupplier;
+import dev.skullition.lockium.util.AppEmojis;
 import dev.skullition.lockium.util.ItemUtils;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
@@ -36,7 +36,6 @@ public class SlashItem extends ApplicationCommand {
   private final SinisterClient sinisterClient;
   private final EmbedStarterSupplier embedStarterSupplier;
   private final GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier;
-  private final ApplicationEmojiSupplier emojiSupplier;
 
   @Value("${growtopia.wiki-url}")
   private String wikiUrl;
@@ -49,19 +48,16 @@ public class SlashItem extends ApplicationCommand {
    * @param itemAutocompleteSupplier the item autocomplete supplier, used to get the list of items
    *     to autocomplete from.
    * @param sinisterClient Sinister client, to get data internally.
-   * @param applicationEmojiSupplier used to obtain ApplicationEmoji instances.
    */
   public SlashItem(
       final GrowtopiaWikiClient client,
       SinisterClient sinisterClient,
       EmbedStarterSupplier embedStarterSupplier,
-      GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier,
-      ApplicationEmojiSupplier applicationEmojiSupplier) {
+      GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier) {
     this.wikiClient = client;
     this.sinisterClient = sinisterClient;
     this.embedStarterSupplier = embedStarterSupplier;
     this.itemAutocompleteSupplier = itemAutocompleteSupplier;
-    this.emojiSupplier = applicationEmojiSupplier;
   }
 
   /**
@@ -121,7 +117,7 @@ public class SlashItem extends ApplicationCommand {
     String releaseDateInfo =
         StringUtils.hasText(itemData.releaseDateInfo())
             ? "%s *Item released %s*"
-                .formatted(emojiSupplier.getEmojiByName("tickingClock"), itemData.releaseDateInfo())
+                .formatted(AppEmojis.TICKING_CLOCK, itemData.releaseDateInfo())
             : "";
     if (itemData.type() == GrowtopiaItem.ItemType.SEED) {
       embedBuilder.setDescription(
@@ -154,26 +150,22 @@ public class SlashItem extends ApplicationCommand {
               : missingEffectText;
       embedBuilder.addField(
           "%s Item Effect (%s)"
-              .formatted(emojiSupplier.getEmojiByName("fairyWings"), itemData.itemEffect().name()),
+              .formatted(AppEmojis.FAIRY_WINGS, itemData.itemEffect().name()),
           """
           %s %s
           %s %s
           """
-              .formatted(
-                  emojiSupplier.getEmojiByName("checkboxEnabled"),
-                  onAdd,
-                  emojiSupplier.getEmojiByName("checkboxDisabled"),
-                  onRemove),
+              .formatted(AppEmojis.CHECKBOX_ENABLED, onAdd, AppEmojis.CHECKBOX_DISABLED, onRemove),
           false);
     }
 
     if (itemData.pbAbility() != null) {
       var pbAbility = itemData.pbAbility();
       embedBuilder.addField(
-          "%s Pet Battles".formatted(emojiSupplier.getEmojiByName("battleLeash")),
+          "%s Pet Battles".formatted(AppEmojis.BATTLE_LEASH),
           "%s %s"
               .formatted(
-                  ItemUtils.stringChiToEmoji(pbAbility.elementType(), emojiSupplier),
+                  ItemUtils.stringChiToEmoji(pbAbility.elementType()),
                   pbAbility.asFormattedString()),
           false);
     }
@@ -181,13 +173,13 @@ public class SlashItem extends ApplicationCommand {
     if (itemData.storeItem() != null) {
       if (itemData.storeItem().currency() == GrowtopiaItem.StoreItem.CurrencyType.GEMS) {
         embedBuilder.addField(
-            "%s From the Store".formatted(emojiSupplier.getEmojiByName("gems")),
+            "%s From the Store".formatted(AppEmojis.GEMS),
             itemData.storeItem().asFormattedString(),
             false);
       } else if (itemData.storeItem().currency()
           == GrowtopiaItem.StoreItem.CurrencyType.GROWTOKENS) {
         embedBuilder.addField(
-            "%s From the Store".formatted(emojiSupplier.getEmojiByName("growtoken")),
+            "%s From the Store".formatted(AppEmojis.GROWTOKEN),
             itemData.storeItem().asFormattedString(),
             false);
       }
@@ -196,7 +188,7 @@ public class SlashItem extends ApplicationCommand {
 
     if (itemData.lockeItem() != null) {
       embedBuilder.addField(
-          "%s From Locke".formatted(emojiSupplier.getEmojiByName("locke")),
+          "%s From Locke".formatted(AppEmojis.LOCKE),
           itemData.lockeItem().asFormattedString(),
           false);
     }
@@ -205,14 +197,14 @@ public class SlashItem extends ApplicationCommand {
       embedBuilder.addField(
           "%s Seasonal Guild Chest Reward"
               .formatted(
-                  ItemUtils.seasonToEmoji(itemData.guildChestReward().season(), emojiSupplier)),
+                  ItemUtils.seasonToEmoji(itemData.guildChestReward().season())),
           itemData.guildChestReward().asFormattedString(),
           false);
     }
 
     if (itemData.dailyChallengeReward() != null) {
       embedBuilder.addField(
-          "%s Daily Challenge Reward".formatted(emojiSupplier.getEmojiByName("challengeBoard")),
+          "%s Daily Challenge Reward".formatted(AppEmojis.CHALLENGE_BOARD),
           itemData.dailyChallengeReward().asFormattedString(),
           false);
     }

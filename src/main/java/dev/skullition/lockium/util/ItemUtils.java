@@ -1,7 +1,6 @@
 package dev.skullition.lockium.util;
 
 import dev.skullition.lockium.model.GrowtopiaItem;
-import dev.skullition.lockium.service.supplier.ApplicationEmojiSupplier;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -12,18 +11,17 @@ public final class ItemUtils {
    * Converts a string chi name to the corresponding {@link Emoji} instance.
    *
    * @param chi the string chi name
-   * @param emojiSupplier the emoji supplier to convert from
    * @return the emoji
    */
   @NotNull
   public static Emoji stringChiToEmoji(
-      @NotNull String chi, @NotNull ApplicationEmojiSupplier emojiSupplier) {
+      @NotNull String chi) {
     return switch (chi) {
-      case "Earth" -> emojiSupplier.getEmojiByName("earth");
-      case "Fire" -> emojiSupplier.getEmojiByName("fire");
-      case "Wind", "Air" -> emojiSupplier.getEmojiByName("wind");
-      case "Water" -> emojiSupplier.getEmojiByName("water");
-      default -> emojiSupplier.getEmojiByName("unknown");
+      case "Earth" -> AppEmojis.EARTH;
+      case "Fire" -> AppEmojis.FIRE;
+      case "Wind", "Air" -> AppEmojis.WIND;
+      case "Water" -> AppEmojis.WATER;
+      default -> AppEmojis.MISSING;
     };
   }
 
@@ -32,17 +30,15 @@ public final class ItemUtils {
    * the corresponding {@link Emoji} instance.
    *
    * @param season the season enum
-   * @param emojiSupplier the emoji supplier to convert from
    * @return the emoji
    */
   @NotNull
   public static Emoji seasonToEmoji(
-      @NotNull GrowtopiaItem.GuildChest.GuildSeason season,
-      @NotNull ApplicationEmojiSupplier emojiSupplier) {
+      @NotNull GrowtopiaItem.GuildChest.GuildSeason season) {
     return switch (season) {
-      case SUMMER -> emojiSupplier.getEmojiByName("summerChest");
-      case WINTER -> emojiSupplier.getEmojiByName("winterChest");
-      case SPRING -> emojiSupplier.getEmojiByName("springChest");
+      case SUMMER -> AppEmojis.SUMMER_CHEST;
+      case WINTER -> AppEmojis.WINTER_CHEST;
+      case SPRING -> AppEmojis.SPRING_CHEST;
     };
   }
 

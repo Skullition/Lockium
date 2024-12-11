@@ -116,8 +116,7 @@ public class SlashItem extends ApplicationCommand {
     }
     String releaseDateInfo =
         StringUtils.hasText(itemData.releaseDateInfo())
-            ? "%s *Item released %s*"
-                .formatted(AppEmojis.TICKING_CLOCK, itemData.releaseDateInfo())
+            ? "%s *Item released %s*".formatted(AppEmojis.TICKING_CLOCK, itemData.releaseDateInfo())
             : "";
     if (itemData.type() == GrowtopiaItem.ItemType.SEED) {
       embedBuilder.setDescription(
@@ -149,8 +148,7 @@ public class SlashItem extends ApplicationCommand {
               ? itemData.itemEffect().onRemoveMessage()
               : missingEffectText;
       embedBuilder.addField(
-          "%s Item Effect (%s)"
-              .formatted(AppEmojis.FAIRY_WINGS, itemData.itemEffect().name()),
+          "%s Item Effect (%s)".formatted(AppEmojis.FAIRY_WINGS, itemData.itemEffect().name()),
           """
           %s %s
           %s %s
@@ -196,8 +194,7 @@ public class SlashItem extends ApplicationCommand {
     if (itemData.guildChestReward() != null) {
       embedBuilder.addField(
           "%s Seasonal Guild Chest Reward"
-              .formatted(
-                  ItemUtils.seasonToEmoji(itemData.guildChestReward().season())),
+              .formatted(ItemUtils.seasonToEmoji(itemData.guildChestReward().season())),
           itemData.guildChestReward().asFormattedString(),
           false);
     }
@@ -206,6 +203,13 @@ public class SlashItem extends ApplicationCommand {
       embedBuilder.addField(
           "%s Daily Challenge Reward".formatted(AppEmojis.CHALLENGE_BOARD),
           itemData.dailyChallengeReward().asFormattedString(),
+          false);
+    }
+
+    if (itemData.legendaryQuestReward() != null) {
+      embedBuilder.addField(
+          "%s Legendary Quest Reward".formatted(AppEmojis.LEGENDARY_WIZARD),
+          itemData.legendaryQuestReward().asFormattedString(),
           false);
     }
 

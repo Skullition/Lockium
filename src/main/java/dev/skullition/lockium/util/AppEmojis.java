@@ -26,4 +26,5 @@ public class AppEmojis {
   public static final ApplicationEmoji SUMMER_CHEST = getEmoji("summer_chest");
   public static final ApplicationEmoji WINTER_CHEST = getEmoji("winter_chest");
   public static final ApplicationEmoji CHALLENGE_BOARD = getEmoji("challenge_board");
+  public static final ApplicationEmoji LEGENDARY_WIZARD = getEmoji("legendary_wizard");
 }

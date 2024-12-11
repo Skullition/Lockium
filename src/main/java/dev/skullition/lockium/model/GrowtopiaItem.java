@@ -1,6 +1,7 @@
 package dev.skullition.lockium.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.skullition.lockium.deserializer.ItemPropertyDeserializer;
 import java.util.Arrays;
@@ -32,7 +33,8 @@ public record GrowtopiaItem(
     @Nullable StoreItem storeItem,
     @Nullable LockeItem lockeItem,
     @Nullable GuildChest guildChestReward,
-    @Nullable DailyChallenge dailyChallengeReward) {
+    @Nullable DailyChallenge dailyChallengeReward,
+    @Nullable LegendaryQuestReward legendaryQuestReward) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
@@ -515,6 +517,29 @@ public record GrowtopiaItem(
                Rules: %s
                """
           .formatted(challengeName, challengeRules);
+    }
+  }
+
+  /**
+   * Record to store which legendary quest rewards this item.
+   *
+   * @param description the description of the quest.
+   * @param wikiUrl where the user can read more about the quest.
+   */
+  public record LegendaryQuestReward(
+      @NotNull String description, @JsonProperty("wikiURL") @NotNull String wikiUrl) {
+    /**
+     * Formats this into a readable string.
+     *
+     * @return the formatted string
+     */
+    @NotNull
+    public String asFormattedString() {
+      return """
+             %s
+             [All the quest steps here](%s)
+             """
+          .formatted(description, wikiUrl);
     }
   }
 }

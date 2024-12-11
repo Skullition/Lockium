@@ -34,7 +34,8 @@ public record GrowtopiaItem(
     @Nullable LockeItem lockeItem,
     @Nullable GuildChest guildChestReward,
     @Nullable DailyChallenge dailyChallengeReward,
-    @Nullable LegendaryQuestReward legendaryQuestReward) {
+    @Nullable LegendaryQuestReward legendaryQuestReward,
+    @Nullable @JsonProperty("fishingData") FishingItem fishingItem) {
   /** Enum to store item flags. */
   public enum ItemProperty {
     MULTI_FACING(0x01),
@@ -540,6 +541,33 @@ public record GrowtopiaItem(
              [All the quest steps here](%s)
              """
           .formatted(description, wikiUrl);
+    }
+  }
+
+  /**
+   * Record to store items that can be obtained by fishing.
+   *
+   * @param obtaining the method to obtain this item
+   * @param isFish whether this item is a fish.
+   * @param maxSize how big this fish is in lbs, 0 if not a fish.
+   */
+  public record FishingItem(
+      @JsonProperty("description") @NotNull String obtaining,
+      @JsonProperty("isAFish") boolean isFish,
+      int maxSize) {
+    /**
+     * Formats this into a readable string.
+     *
+     * @return the formatted string
+     */
+    @NotNull
+    public String asFormattedString() {
+      String fishText = isFish ? "Perfect: **`%slb`**".formatted(maxSize) : "";
+      return """
+             Obtained by fishing with: %s
+             %s
+             """
+          .formatted(obtaining, fishText);
     }
   }
 }

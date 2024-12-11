@@ -223,6 +223,13 @@ public class SlashItem extends ApplicationCommand {
           false);
     }
 
+    if (itemData.fishingItem() != null) {
+      embedBuilder.addField(
+          "%s Fishing Data".formatted(AppEmojis.FISHING_ROD),
+          itemData.fishingItem().asFormattedString(),
+          false);
+    }
+
     event.replyEmbeds(embedBuilder.build()).queue();
   }
 

@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
+import io.github.freya022.botcommands.api.core.BotOwners;
 import java.util.Collection;
 import java.util.Optional;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -36,6 +37,7 @@ public class SlashItem extends ApplicationCommand {
   private final SinisterClient sinisterClient;
   private final EmbedStarterSupplier embedStarterSupplier;
   private final GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier;
+  private final BotOwners botOwners;
 
   @Value("${growtopia.wiki-url}")
   private String wikiUrl;
@@ -48,16 +50,19 @@ public class SlashItem extends ApplicationCommand {
    * @param itemAutocompleteSupplier the item autocomplete supplier, used to get the list of items
    *     to autocomplete from.
    * @param sinisterClient Sinister client, to get data internally.
+   * @param botOwners utility service to determine whether user is bot owner.
    */
   public SlashItem(
       final GrowtopiaWikiClient client,
       SinisterClient sinisterClient,
       EmbedStarterSupplier embedStarterSupplier,
-      GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier) {
+      GrowtopiaItemAutocompleteSupplier itemAutocompleteSupplier,
+      BotOwners botOwners) {
     this.wikiClient = client;
     this.sinisterClient = sinisterClient;
     this.embedStarterSupplier = embedStarterSupplier;
     this.itemAutocompleteSupplier = itemAutocompleteSupplier;
+    this.botOwners = botOwners;
   }
 
   /**
@@ -108,7 +113,12 @@ public class SlashItem extends ApplicationCommand {
     embedBuilder.setTitle(itemWikiUrl);
     embedBuilder.setThumbnail(itemData.wikiItemSprite());
     embedBuilder.setAuthor(
-        "Item info for %s".formatted(itemData.name()), itemWikiUrl, itemData.wikiSeedSprite());
+        "Item info for %s %s"
+            .formatted(
+                itemData.name(),
+                botOwners.isOwner(event.getUser()) ? "[%s]".formatted(itemData.id()) : ""),
+        itemWikiUrl,
+        itemData.wikiSeedSprite());
     embedBuilder.setColor(itemData.baseColor());
 
     if (StringUtils.hasText(itemData.extraNote())) {

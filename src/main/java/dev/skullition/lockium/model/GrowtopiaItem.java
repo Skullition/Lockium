@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.skullition.lockium.deserializer.ItemPropertyDeserializer;
+import dev.skullition.lockium.util.AppEmojis;
+import dev.skullition.lockium.util.ItemUtils;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Contract;
+import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.StringUtils;
@@ -237,6 +239,16 @@ public record GrowtopiaItem(
     }
   }
 
+  /** Interface for items with standard recipes. */
+  public interface ItemRecipe {
+    /**
+     * Adds this item recipe to the embed.
+     *
+     * @param embedBuilder the embed to be added to
+     */
+    void addToEmbed(@NotNull EmbedBuilder embedBuilder);
+  }
+
   /**
    * Record to store effects when a player uses an item with effects (null if item does not give
    * effects).
@@ -246,7 +258,30 @@ public record GrowtopiaItem(
    * @param onRemoveMessage message shown when a player removes an item with an effect.
    */
   public record ItemEffect(
-      @NotNull String name, @NotNull String onUseMessage, @NotNull String onRemoveMessage) {}
+      @NotNull String name, @NotNull String onUseMessage, @NotNull String onRemoveMessage)
+      implements ItemRecipe {
+
+    /**
+     * Adds this item recipe to the embed.
+     *
+     * @param embedBuilder the embed to be added to
+     */
+    @Override
+    public void addToEmbed(@NotNull EmbedBuilder embedBuilder) {
+
+      String missingEffectText = "(Missing! Report if you have it!)";
+      String onAdd = StringUtils.hasText(onUseMessage) ? onUseMessage : missingEffectText;
+      String onRemove = StringUtils.hasText(onRemoveMessage) ? onRemoveMessage : missingEffectText;
+      embedBuilder.addField(
+          "%s Item Effect (%s)".formatted(AppEmojis.FAIRY_WINGS, name),
+          """
+              %s %s
+              %s %s
+              """
+              .formatted(AppEmojis.CHECKBOX_ENABLED, onAdd, AppEmojis.CHECKBOX_DISABLED, onRemove),
+          false);
+    }
+  }
 
   /** Record to store abilities of pets that can be used in Pet Battle. */
   public record PetBattleAbility(
@@ -255,34 +290,65 @@ public record GrowtopiaItem(
       int powerCooldown,
       @NotNull String petPrefix,
       @NotNull String petSuffix,
-      @NotNull String elementType) {
+      @NotNull String elementType)
+      implements ItemRecipe {
+
     /**
-     * Formats this into a readable string.
+     * Adds this item recipe to the embed.
      *
-     * @return the formatted string
+     * @param embedBuilder the embed to be added to
      */
     // NOTE: Might need to escape abilityName
+    @Override
+    public void addToEmbed(@NotNull EmbedBuilder embedBuilder) {
+      String text = asFormattedString();
+
+      embedBuilder.addField(
+          "%s Pet Battles".formatted(AppEmojis.BATTLE_LEASH),
+          "%s %s".formatted(ItemUtils.stringChiToEmoji(elementType), text),
+          false);
+    }
+
     @NotNull
-    @Contract(pure = true)
-    public String asFormattedString() {
+    private String asFormattedString() {
       return """
-             **%s**
-             %s
-             Cooldown: %ss
-             """
+           **%s**
+           %s
+           Cooldown: %ss
+           """
           .formatted(abilityName, abilityDescription, powerCooldown);
     }
   }
 
   /** Record to store items that can be bought in-game in the store. */
   public record StoreItem(
-      @NotNull CurrencyType currency, int price, float priceUsd, @Nullable String info) {
+      @NotNull CurrencyType currency, int price, float priceUsd, @Nullable String info)
+      implements ItemRecipe {
+
     /**
-     * Formats this into a readable string.
+     * Adds this item recipe to the embed.
      *
-     * @return the formatted string
+     * @param embedBuilder the embed to be added to
      */
-    public String asFormattedString() {
+    @Override
+    public void addToEmbed(@NotNull EmbedBuilder embedBuilder) {
+      var text = asFormattedString();
+      embedBuilder.addField(
+          "%s From the Store"
+              .formatted(
+                  switch (currency) {
+                    case GEMS -> AppEmojis.GEMS;
+                    case GROWTOKENS -> AppEmojis.GROWTOKEN;
+                    case MONEY ->
+                        throw new IllegalStateException(
+                            "Currency Money is currently unimplemented."); // TODO Implement this
+                  }),
+          text,
+          false);
+    }
+
+    @NotNull
+    private String asFormattedString() {
       var stringBuilder = new StringBuilder();
       stringBuilder.append(
           currency == CurrencyType.MONEY
@@ -320,13 +386,9 @@ public record GrowtopiaItem(
    * @param canBePurchasedFromLockBot whether the item is also found in LockBot's trades
    */
   public record LockeItem(
-      @NotNull SimpleGrowtopiaItem itemToBuy, int cost, boolean canBePurchasedFromLockBot) {
-    /**
-     * Formats this into a readable string.
-     *
-     * @return the formatted string
-     */
-    public String asFormattedString() {
+      @NotNull SimpleGrowtopiaItem itemToBuy, int cost, boolean canBePurchasedFromLockBot)
+      implements ItemRecipe {
+    private String asFormattedString() {
       var stringBuilder = new StringBuilder();
       // if item is world lock
       if (itemToBuy.id() == 242) {
@@ -351,6 +413,16 @@ public record GrowtopiaItem(
       }
       return stringBuilder.toString();
     }
+
+    /**
+     * Adds this item recipe to the embed.
+     *
+     * @param embedBuilder the embed to be added to
+     */
+    @Override
+    public void addToEmbed(@NotNull EmbedBuilder embedBuilder) {
+      embedBuilder.addField("%s From Locke".formatted(AppEmojis.LOCKE), asFormattedString(), false);
+    }
   }
 
   /** Record to store which guild chest this item comes from. */
@@ -360,14 +432,10 @@ public record GrowtopiaItem(
       @NotNull ChestContributionType contribType,
       @NotNull PersonalTier personalChestTier,
       @NotNull GuildTier guildChestTier,
-      @Nullable String extraNote) {
-    /**
-     * Formats this into a readable string.
-     *
-     * @return the formatted string
-     */
+      @Nullable String extraNote)
+      implements ItemRecipe {
     @NotNull
-    public String asFormattedString() {
+    private String asFormattedString() {
       var stringBuilder = new StringBuilder();
 
       boolean isGuildChest = contribType == ChestContributionType.GUILD;
@@ -382,6 +450,19 @@ public record GrowtopiaItem(
         stringBuilder.append(extraNote);
       }
       return stringBuilder.toString();
+    }
+
+    /**
+     * Adds this item recipe to the embed.
+     *
+     * @param embedBuilder the embed to be added to
+     */
+    @Override
+    public void addToEmbed(@NotNull EmbedBuilder embedBuilder) {
+      embedBuilder.addField(
+          "%s Seasonal Guild Chest Reward".formatted(ItemUtils.seasonToEmoji(season)),
+          asFormattedString(),
+          false);
     }
 
     /** Which season the chest is from. */
@@ -498,14 +579,10 @@ public record GrowtopiaItem(
    * @param isGuildReward whether this item is a guild or personal reward
    */
   public record DailyChallenge(
-      @NotNull String challengeName, @NotNull String challengeRules, boolean isGuildReward) {
-    /**
-     * Formats this into a readable string.
-     *
-     * @return the formatted string
-     */
+      @NotNull String challengeName, @NotNull String challengeRules, boolean isGuildReward)
+      implements ItemRecipe {
     @NotNull
-    public String asFormattedString() {
+    private String asFormattedString() {
       if (isGuildReward) {
         return """
                Obtained from the %s guild daily challenge (Top 3 guilds).
@@ -519,6 +596,19 @@ public record GrowtopiaItem(
                """
           .formatted(challengeName, challengeRules);
     }
+
+    /**
+     * Adds this item recipe to the embed.
+     *
+     * @param embedBuilder the embed to be added to
+     */
+    @Override
+    public void addToEmbed(@NotNull EmbedBuilder embedBuilder) {
+      embedBuilder.addField(
+          "%s Daily Challenge Reward".formatted(AppEmojis.CHALLENGE_BOARD),
+          asFormattedString(),
+          false);
+    }
   }
 
   /**
@@ -528,19 +618,28 @@ public record GrowtopiaItem(
    * @param wikiUrl where the user can read more about the quest.
    */
   public record LegendaryQuestReward(
-      @NotNull String description, @JsonProperty("wikiURL") @NotNull String wikiUrl) {
-    /**
-     * Formats this into a readable string.
-     *
-     * @return the formatted string
-     */
+      @NotNull String description, @JsonProperty("wikiURL") @NotNull String wikiUrl)
+      implements ItemRecipe {
     @NotNull
-    public String asFormattedString() {
+    private String asFormattedString() {
       return """
              %s
              [All the quest steps here](%s)
              """
           .formatted(description, wikiUrl);
+    }
+
+    /**
+     * Adds this item recipe to the embed.
+     *
+     * @param embedBuilder the embed to be added to
+     */
+    @Override
+    public void addToEmbed(@NotNull EmbedBuilder embedBuilder) {
+      embedBuilder.addField(
+          "%s Legendary Quest Reward".formatted(AppEmojis.LEGENDARY_WIZARD),
+          asFormattedString(),
+          false);
     }
   }
 
@@ -554,20 +653,28 @@ public record GrowtopiaItem(
   public record FishingItem(
       @JsonProperty("description") @NotNull String obtaining,
       @JsonProperty("isAFish") boolean isFish,
-      int maxSize) {
-    /**
-     * Formats this into a readable string.
-     *
-     * @return the formatted string
-     */
+      int maxSize)
+      implements ItemRecipe {
     @NotNull
-    public String asFormattedString() {
+    private String asFormattedString() {
       String fishText = isFish ? "Perfect: **`%slb`**".formatted(maxSize) : "";
       return """
              Obtained by fishing with: %s
              %s
              """
           .formatted(obtaining, fishText);
+    }
+
+    /**
+     * Adds this item recipe to the embed.
+     *
+     * @param embedBuilder the embed to be added to
+     */
+    @Override
+    public void addToEmbed(@NotNull EmbedBuilder embedBuilder) {
+
+      embedBuilder.addField(
+          "%s Fishing Data".formatted(AppEmojis.FISHING_ROD), asFormattedString(), false);
     }
   }
 }

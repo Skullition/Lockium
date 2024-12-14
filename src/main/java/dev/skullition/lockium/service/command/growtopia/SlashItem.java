@@ -65,6 +65,24 @@ public class SlashItem extends ApplicationCommand {
     this.botOwners = botOwners;
   }
 
+  private static void addItemRecipes(EmbedBuilder embedBuilder, GrowtopiaItem itemData) {
+    addEmbedIfNotNull(embedBuilder, itemData.itemEffect());
+    addEmbedIfNotNull(embedBuilder, itemData.pbAbility());
+    addEmbedIfNotNull(embedBuilder, itemData.storeItem());
+    addEmbedIfNotNull(embedBuilder, itemData.lockeItem());
+    addEmbedIfNotNull(embedBuilder, itemData.dailyChallengeReward());
+    addEmbedIfNotNull(embedBuilder, itemData.guildChestReward());
+    addEmbedIfNotNull(embedBuilder, itemData.legendaryQuestReward());
+    addEmbedIfNotNull(embedBuilder, itemData.fishingItem());
+  }
+
+  private static <T extends GrowtopiaItem.ItemRecipe> void addEmbedIfNotNull(
+      @NotNull EmbedBuilder embedBuilder, @Nullable T itemRecipe) {
+    if (itemRecipe != null) {
+      itemRecipe.addToEmbed(embedBuilder);
+    }
+  }
+
   /**
    * Handles the {@code /growtopia item} slash command. Retrieves item data either from the
    * Growtopia Wiki or internally based on the user's choice.
@@ -124,6 +142,7 @@ public class SlashItem extends ApplicationCommand {
     if (StringUtils.hasText(itemData.extraNote())) {
       embedBuilder.addField("Extra Item Notes", itemData.extraNote(), false);
     }
+    
     String releaseDateInfo =
         StringUtils.hasText(itemData.releaseDateInfo())
             ? "%s *Item released %s*".formatted(AppEmojis.TICKING_CLOCK, itemData.releaseDateInfo())
@@ -147,88 +166,7 @@ public class SlashItem extends ApplicationCommand {
               .formatted(releaseDateInfo, description));
     }
 
-    if (itemData.itemEffect() != null) {
-      String missingEffectText = "(Missing! Report if you have it!)";
-      String onAdd =
-          StringUtils.hasText(itemData.itemEffect().onUseMessage())
-              ? itemData.itemEffect().onUseMessage()
-              : missingEffectText;
-      String onRemove =
-          StringUtils.hasText(itemData.itemEffect().onRemoveMessage())
-              ? itemData.itemEffect().onRemoveMessage()
-              : missingEffectText;
-      embedBuilder.addField(
-          "%s Item Effect (%s)".formatted(AppEmojis.FAIRY_WINGS, itemData.itemEffect().name()),
-          """
-          %s %s
-          %s %s
-          """
-              .formatted(AppEmojis.CHECKBOX_ENABLED, onAdd, AppEmojis.CHECKBOX_DISABLED, onRemove),
-          false);
-    }
-
-    if (itemData.pbAbility() != null) {
-      var pbAbility = itemData.pbAbility();
-      embedBuilder.addField(
-          "%s Pet Battles".formatted(AppEmojis.BATTLE_LEASH),
-          "%s %s"
-              .formatted(
-                  ItemUtils.stringChiToEmoji(pbAbility.elementType()),
-                  pbAbility.asFormattedString()),
-          false);
-    }
-
-    if (itemData.storeItem() != null) {
-      if (itemData.storeItem().currency() == GrowtopiaItem.StoreItem.CurrencyType.GEMS) {
-        embedBuilder.addField(
-            "%s From the Store".formatted(AppEmojis.GEMS),
-            itemData.storeItem().asFormattedString(),
-            false);
-      } else if (itemData.storeItem().currency()
-          == GrowtopiaItem.StoreItem.CurrencyType.GROWTOKENS) {
-        embedBuilder.addField(
-            "%s From the Store".formatted(AppEmojis.GROWTOKEN),
-            itemData.storeItem().asFormattedString(),
-            false);
-      }
-      // CurrencyType.MONEY is unimplemented
-    }
-
-    if (itemData.lockeItem() != null) {
-      embedBuilder.addField(
-          "%s From Locke".formatted(AppEmojis.LOCKE),
-          itemData.lockeItem().asFormattedString(),
-          false);
-    }
-
-    if (itemData.guildChestReward() != null) {
-      embedBuilder.addField(
-          "%s Seasonal Guild Chest Reward"
-              .formatted(ItemUtils.seasonToEmoji(itemData.guildChestReward().season())),
-          itemData.guildChestReward().asFormattedString(),
-          false);
-    }
-
-    if (itemData.dailyChallengeReward() != null) {
-      embedBuilder.addField(
-          "%s Daily Challenge Reward".formatted(AppEmojis.CHALLENGE_BOARD),
-          itemData.dailyChallengeReward().asFormattedString(),
-          false);
-    }
-
-    if (itemData.legendaryQuestReward() != null) {
-      embedBuilder.addField(
-          "%s Legendary Quest Reward".formatted(AppEmojis.LEGENDARY_WIZARD),
-          itemData.legendaryQuestReward().asFormattedString(),
-          false);
-    }
-
-    if (itemData.fishingItem() != null) {
-      embedBuilder.addField(
-          "%s Fishing Data".formatted(AppEmojis.FISHING_ROD),
-          itemData.fishingItem().asFormattedString(),
-          false);
-    }
+    addItemRecipes(embedBuilder, itemData);
 
     event.replyEmbeds(embedBuilder.build()).queue();
   }

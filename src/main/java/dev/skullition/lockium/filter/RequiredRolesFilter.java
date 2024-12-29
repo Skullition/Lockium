@@ -12,8 +12,10 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /** Filter to limit command usage to only members with certain role(s). */
+@Service
 public class RequiredRolesFilter implements ApplicationCommandFilter<String> {
   private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RequiredRolesFilter.class);
 
@@ -51,6 +53,7 @@ public class RequiredRolesFilter implements ApplicationCommandFilter<String> {
   @Override
   public String check(
       @NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {
+    // Check if @RequiredRoles exist on command
     final var annotation = commandInfo.findAnnotation(RequiredRoles.class);
     if (annotation == null) {
       return null;
@@ -60,7 +63,7 @@ public class RequiredRolesFilter implements ApplicationCommandFilter<String> {
     if (member == null) {
       logger.warn(
           "@RequiredRoles can only be used on guild-only commands: {}", commandInfo.getFunction());
-      return "You are missing required roles";
+      return "You are missing the required roles.";
     }
 
     final var missingRoles = getMissingRoles(annotation, member);

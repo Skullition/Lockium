@@ -79,9 +79,9 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/io.github.freya022/BotCommands -->
         <dependency>
-            <groupId>io.github.freya022</groupId>
+            <groupId>com.github.skullition</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>0e4c8a7ca71ab5366a1bd05d361ed43bd12a40db</version>
+            <version>c451744d59d352dd955c6442517c9efa671473be</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>

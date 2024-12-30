@@ -17,6 +17,7 @@ services:
         POSTGRES_HOSTNAME: postgresdb
     networks:
       - lockium
+      - db
 
 #    volumes:
 #      - ../..:/workspaces:cached
@@ -43,9 +44,11 @@ services:
       POSTGRES_DB: postgres
     networks:
       - lockium
+      - db
 
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 networks:
   lockium:    
     external: true
+  db:  

@@ -19,7 +19,8 @@
 	// Configure tool-specific properties.
   "customizations" : {
     "jetbrains" : {
-      "backend" : "IntelliJ"
+      "backend" : "IntelliJ",
+      "plugins" : ["google-java-format", "CheckStyle-IDEA"],
     }
   }
   

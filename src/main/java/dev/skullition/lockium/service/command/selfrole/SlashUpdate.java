@@ -112,7 +112,12 @@ public class SlashUpdate extends ApplicationCommand {
           try {
             color = Color.decode(stringColor);
           } catch (NumberFormatException e) {
-            event.reply("Invalid color!").setEphemeral(true).queue();
+            event
+                .reply(
+                    "%s is an invalid color. Example of valid color: `#fffff`"
+                        .formatted(stringColor))
+                .setEphemeral(true)
+                .queue();
             return;
           }
           role.getManager().setColor(color).complete();

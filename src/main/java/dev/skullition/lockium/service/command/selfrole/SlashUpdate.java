@@ -41,6 +41,11 @@ public class SlashUpdate extends ApplicationCommand {
   }
 
   @NotNull
+  private static List<Long> getMemberRoleIds(@NotNull GuildSlashEvent event) {
+    return event.getMember().getRoles().stream().map(ISnowflake::getIdLong).toList();
+  }
+
+  @NotNull
   private Role createRole(@NotNull Guild guild, @NotNull User user) {
     String name = user.getGlobalName() == null ? user.getName() : user.getGlobalName();
     Role role = guild.createRole().setName(name).complete();
@@ -55,7 +60,7 @@ public class SlashUpdate extends ApplicationCommand {
     }
     final int allowedSelfRolePosition = referenceRole.getPosition();
 
-    guild.modifyRolePositions().selectPosition(role).moveTo(allowedSelfRolePosition + 1).complete();
+    guild.modifyRolePositions().selectPosition(role).moveTo(allowedSelfRolePosition).complete();
 
     guild.addRoleToMember(user, role).queue();
     selfRoleRepository.save(new SelfRole(role.getName(), role.getIdLong()));
@@ -92,8 +97,7 @@ public class SlashUpdate extends ApplicationCommand {
       GuildSlashEvent event,
       @NotNull @SlashOption(name = "hex_color", description = "Which color to update to.")
           String stringColor) {
-    List<Long> memberRoleIds =
-        event.getMember().getRoles().stream().map(ISnowflake::getIdLong).toList();
+    List<Long> memberRoleIds = getMemberRoleIds(event);
     if (checkMemberEligible(event, memberRoleIds)) {
       return;
     }
@@ -111,7 +115,7 @@ public class SlashUpdate extends ApplicationCommand {
                       "%s is an invalid color. Example of valid color: `#fffff`"
                           .formatted(stringColor))
                   .setEphemeral(true)
-                  .queue();
+                  .complete();
               return;
             }
             role.getManager().setColor(color).complete();
@@ -156,8 +160,7 @@ public class SlashUpdate extends ApplicationCommand {
       GuildSlashEvent event,
       @NotNull @SlashOption(name = "icon", description = "Which icon to update to.")
           Message.Attachment attachment) {
-    List<Long> memberRoleIds =
-        event.getMember().getRoles().stream().map(ISnowflake::getIdLong).toList();
+    List<Long> memberRoleIds = getMemberRoleIds(event);
     if (checkMemberEligible(event, memberRoleIds)) {
       return;
     }
@@ -179,5 +182,39 @@ public class SlashUpdate extends ApplicationCommand {
             logger.error("Error caught while trying to update role icon.", e);
           }
         });
+  }
+
+  /**
+   * Handles the {@code /self_role update delete} command to create or update the user's role and
+   * update its icon.
+   */
+  @BotPermissions(Permission.MANAGE_ROLES)
+  @JDASlashCommand(
+      name = "self_role",
+      group = "update",
+      subcommand = "delete",
+      description = "Deletes your personal role. You can make it again later.")
+  public void onSlashDelete(GuildSlashEvent event) {
+    List<Long> memberRoleIds = getMemberRoleIds(event);
+    SelfRole selfRole = selfRoleRepository.findByIdIn(memberRoleIds);
+    if (selfRole == null) {
+      event.reply("You do not have any self roles.").setEphemeral(true).queue();
+      return;
+    }
+
+    Role role = event.getGuild().getRoleById(selfRole.getId());
+    if (role == null) {
+      event.reply("You do not have any self roles.").setEphemeral(true).queue();
+      return;
+    }
+
+    role.delete()
+        .queue(
+            onSuccess -> {
+              selfRoleRepository.delete(selfRole);
+              event.reply("Your self role has been deleted.").setEphemeral(true).queue();
+            },
+            onFailure ->
+                event.reply("Failed trying to delete your role.").setEphemeral(true).queue());
   }
 }

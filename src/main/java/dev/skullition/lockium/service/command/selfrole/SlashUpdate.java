@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
+import io.github.freya022.botcommands.api.core.annotations.BEventListener;
 import java.awt.Color;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,11 +212,15 @@ public class SlashUpdate extends ApplicationCommand {
 
     role.delete()
         .queue(
-            onSuccess -> {
-              selfRoleRepository.delete(selfRole);
-              event.reply("Your self role has been deleted.").setEphemeral(true).queue();
-            },
+            onSuccess -> event.reply("Your self role has been deleted.").setEphemeral(true).queue(),
             onFailure ->
                 event.reply("Failed trying to delete your role.").setEphemeral(true).queue());
+  }
+
+  /** Listens to {@link RoleDeleteEvent} to remove self roles from database if present. */
+  @BEventListener
+  public void onRoleDeleted(RoleDeleteEvent event) {
+    final var optionalSelfRole = selfRoleRepository.findById(event.getRole().getIdLong());
+    optionalSelfRole.ifPresent(selfRoleRepository::delete);
   }
 }

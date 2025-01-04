@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
@@ -87,45 +88,96 @@ public class SlashUpdate extends ApplicationCommand {
       group = "update",
       subcommand = "color",
       description = "Update your role's color.")
-  public void onSlashUpdate(
+  public void onSlashUpdateColor(
       GuildSlashEvent event,
       @NotNull @SlashOption(name = "hex_color", description = "Which color to update to.")
           String stringColor) {
     List<Long> memberRoleIds =
         event.getMember().getRoles().stream().map(ISnowflake::getIdLong).toList();
+    if (checkMemberEligible(event, memberRoleIds)) {
+      return;
+    }
+
+    VIRTUAL_EXECUTOR.submit(
+        () -> {
+          try {
+            final var role = getOrCreateSelfRole(event.getGuild(), event.getUser(), memberRoleIds);
+            final Color color;
+            try {
+              color = Color.decode(stringColor);
+            } catch (NumberFormatException e) {
+              event
+                  .reply(
+                      "%s is an invalid color. Example of valid color: `#fffff`"
+                          .formatted(stringColor))
+                  .setEphemeral(true)
+                  .queue();
+              return;
+            }
+            role.getManager().setColor(color).complete();
+
+            event
+                .reply("Your role color has been updated to %s.".formatted(stringColor))
+                .setEphemeral(true)
+                .complete();
+          } catch (Throwable e) {
+            event.reply("Something went wrong! Please try again later!").queue();
+            logger.error("Error caught while trying to update role color.", e);
+          }
+        });
+  }
+
+  private boolean checkMemberEligible(GuildSlashEvent event, List<Long> memberRoleIds) {
     if (!allowedSelfRoleRepository.existsByIdIn(memberRoleIds)) {
       event.reply("You do not have any of the required roles!").setEphemeral(true).queue();
-      return;
+      return true;
     }
     if (!event.getGuild().getSelfMember().canInteract(event.getMember())) {
       event
           .reply("Lockium cannot interact with you. Try moving one of Lockium's roles higher.")
           .setEphemeral(true)
           .queue();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Handles the {@code /self_role update icon} command to create or update the user's role and
+   * update its icon.
+   */
+  @BotPermissions(Permission.MANAGE_ROLES)
+  @JDASlashCommand(
+      name = "self_role",
+      group = "update",
+      subcommand = "icon",
+      description = "Update your role's icon.")
+  public void onSlashUpdateIcon(
+      GuildSlashEvent event,
+      @NotNull @SlashOption(name = "icon", description = "Which icon to update to.")
+          Message.Attachment attachment) {
+    List<Long> memberRoleIds =
+        event.getMember().getRoles().stream().map(ISnowflake::getIdLong).toList();
+    if (checkMemberEligible(event, memberRoleIds)) {
       return;
     }
-
+    if (!attachment.isImage()) {
+      event.reply("This is not an image.").setEphemeral(true).queue();
+      return;
+    }
     VIRTUAL_EXECUTOR.submit(
         () -> {
-          final var role = getOrCreateSelfRole(event.getGuild(), event.getUser(), memberRoleIds);
-          final Color color;
           try {
-            color = Color.decode(stringColor);
-          } catch (NumberFormatException e) {
-            event
-                .reply(
-                    "%s is an invalid color. Example of valid color: `#fffff`"
-                        .formatted(stringColor))
-                .setEphemeral(true)
-                .queue();
-            return;
-          }
-          role.getManager().setColor(color).complete();
+            final var role = getOrCreateSelfRole(event.getGuild(), event.getUser(), memberRoleIds);
+            final var icon = attachment.getProxy().downloadAsIcon().get();
+            role.getManager().setIcon(icon).complete();
 
-          event
-              .reply("Your role color has been updated to %s.".formatted(stringColor))
-              .setEphemeral(true)
-              .complete();
+            event.reply("Your role icon has been updated.").setEphemeral(true).complete();
+
+          } catch (Throwable e) {
+            event.reply("Something went wrong! Please try again later!").queue();
+            logger.error("Error caught while trying to update role icon.", e);
+          }
         });
   }
 }

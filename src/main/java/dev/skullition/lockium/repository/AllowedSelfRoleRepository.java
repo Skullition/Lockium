@@ -11,4 +11,7 @@ public interface AllowedSelfRoleRepository extends CrudRepository<AllowedSelfRol
 
   /** Checks whether any of the ids are in the table. */
   boolean existsByIdIn(List<Long> ids);
+
+  /** Checks and returns the roles that are allowed from the table. */
+  List<AllowedSelfRole> findByGuildId(Long guildId);
 }

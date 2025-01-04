@@ -16,13 +16,25 @@ public class AllowedSelfRole {
   @Column(name = "name")
   private String name;
 
+  @Column(name = "guild_id", nullable = false)
+  private Long guildId;
+
+  public Long getGuildId() {
+    return guildId;
+  }
+
+  public void setGuildId(Long guildId) {
+    this.guildId = guildId;
+  }
+
   /** Entity to store roles that are allowed to their own roles. */
   public AllowedSelfRole() {}
 
   /** Entity to store roles that are allowed to their own roles. */
-  public AllowedSelfRole(Long id, String name) {
+  public AllowedSelfRole(Long id, String name, Long guildId) {
     this.id = id;
     this.name = name;
+    this.guildId = guildId;
   }
 
   public Long getId() {

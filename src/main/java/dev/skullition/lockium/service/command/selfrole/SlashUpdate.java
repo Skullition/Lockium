@@ -1,5 +1,6 @@
 package dev.skullition.lockium.service.command.selfrole;
 
+import dev.skullition.lockium.model.entity.AllowedSelfRole;
 import dev.skullition.lockium.model.entity.SelfRole;
 import dev.skullition.lockium.repository.AllowedSelfRoleRepository;
 import dev.skullition.lockium.repository.SelfRoleRepository;
@@ -11,6 +12,8 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import java.awt.Color;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -22,9 +25,10 @@ import org.slf4j.LoggerFactory;
 
 /** Command relating to creating or updating a member's self roles. */
 @Command
-@BotPermissions(Permission.MANAGE_ROLES)
 public class SlashUpdate extends ApplicationCommand {
   private static final Logger logger = LoggerFactory.getLogger(SlashUpdate.class);
+  private static final ExecutorService VIRTUAL_EXECUTOR =
+      Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("Commands").factory());
   private final AllowedSelfRoleRepository allowedSelfRoleRepository;
   private final SelfRoleRepository selfRoleRepository;
 
@@ -37,18 +41,32 @@ public class SlashUpdate extends ApplicationCommand {
 
   @NotNull
   private Role createRole(@NotNull Guild guild, @NotNull User user) {
-    String name = user.getGlobalName() == null ? guild.getName() : user.getGlobalName();
+    String name = user.getGlobalName() == null ? user.getName() : user.getGlobalName();
     Role role = guild.createRole().setName(name).complete();
+
+    List<AllowedSelfRole> guildAllowedSelfRoles =
+        allowedSelfRoleRepository.findByGuildId(guild.getIdLong());
+    Role referenceRole = guild.getRoleById(guildAllowedSelfRoles.getFirst().getId());
+    if (referenceRole == null) {
+      throw new IllegalStateException(
+          "reference role of id:%s in guild:%s not found."
+              .formatted(guildAllowedSelfRoles.getFirst().getId(), guild.getName()));
+    }
+    final int allowedSelfRolePosition = referenceRole.getPosition();
+
+    guild.modifyRolePositions().selectPosition(role).moveTo(allowedSelfRolePosition + 1).complete();
+
     guild.addRoleToMember(user, role).queue();
     selfRoleRepository.save(new SelfRole(role.getName(), role.getIdLong()));
     return role;
   }
 
   @NotNull
-  private Role getOrCreateRole(
+  private Role getOrCreateSelfRole(
       @NotNull Guild guild, @NotNull User user, @NotNull List<Long> memberRoleIds) {
     SelfRole selfRole = selfRoleRepository.findByIdIn(memberRoleIds);
-    logger.info("Selfrole: {}, memberRoleIds: {}", selfRole, memberRoleIds);
+    logger.debug("Selfrole: {}, memberRoleIds: {}", selfRole, memberRoleIds);
+
     if (selfRole == null) {
       return createRole(guild, user);
     }
@@ -63,6 +81,7 @@ public class SlashUpdate extends ApplicationCommand {
    * Handles the {@code /self_role update color} command to create or update the user's role and
    * update its color.
    */
+  @BotPermissions(Permission.MANAGE_ROLES)
   @JDASlashCommand(
       name = "self_role",
       group = "update",
@@ -86,22 +105,22 @@ public class SlashUpdate extends ApplicationCommand {
       return;
     }
 
-    Role role = getOrCreateRole(event.getGuild(), event.getUser(), memberRoleIds);
-    Color color;
-    try {
-      color = Color.decode(stringColor);
-    } catch (NumberFormatException e) {
-      event.reply("Invalid color!").setEphemeral(true).queue();
-      return;
-    }
-    role.getManager()
-        .setColor(color)
-        .queue(
-            onSuccess ->
-                event
-                    .reply("Your role color has been updated to %s.".formatted(color.getRGB()))
-                    .setEphemeral(true)
-                    .queue(),
-            onFailure -> event.reply("Could not update your role color.").queue());
+    VIRTUAL_EXECUTOR.submit(
+        () -> {
+          final var role = getOrCreateSelfRole(event.getGuild(), event.getUser(), memberRoleIds);
+          final Color color;
+          try {
+            color = Color.decode(stringColor);
+          } catch (NumberFormatException e) {
+            event.reply("Invalid color!").setEphemeral(true).queue();
+            return;
+          }
+          role.getManager().setColor(color).complete();
+
+          event
+              .reply("Your role color has been updated to %s.".formatted(stringColor))
+              .setEphemeral(true)
+              .complete();
+        });
   }
 }

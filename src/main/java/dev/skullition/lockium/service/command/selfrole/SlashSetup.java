@@ -4,7 +4,6 @@ import dev.skullition.lockium.model.entity.AllowedSelfRole;
 import dev.skullition.lockium.repository.AllowedSelfRoleRepository;
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.annotations.UserPermissions;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.CommandScope;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
@@ -19,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 /** Command to set up which roles are allowed to create and update self roles. */
 @Command
-@UserPermissions({Permission.MANAGE_ROLES, Permission.NICKNAME_MANAGE})
-@BotPermissions(Permission.MANAGE_ROLES)
 public class SlashSetup extends ApplicationCommand {
   private final AllowedSelfRoleRepository repository;
 
@@ -38,6 +35,7 @@ public class SlashSetup extends ApplicationCommand {
       integrationTypes = IntegrationType.GUILD_INSTALL,
       defaultLocked = true,
       description = "Commands related to creating and updating self roles.")
+  @BotPermissions(Permission.MANAGE_ROLES)
   @JDASlashCommand(
       name = "self_role",
       subcommand = "setup",
@@ -46,7 +44,12 @@ public class SlashSetup extends ApplicationCommand {
       GuildSlashEvent event,
       @NotNull @SlashOption(name = "role", description = "Which role to allow creating self roles.")
           Role role) {
-    AllowedSelfRole allowedSelfRole = new AllowedSelfRole(role.getIdLong(), role.getName());
+    if (!event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
+      event.reply("You do not have permission to manage roles.").queue();
+      return;
+    }
+    AllowedSelfRole allowedSelfRole =
+        new AllowedSelfRole(role.getIdLong(), role.getName(), event.getGuild().getIdLong());
     repository.save(allowedSelfRole);
     event.reply("Members with %s role can now create their own roles.".formatted(role)).queue();
   }

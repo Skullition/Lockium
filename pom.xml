@@ -89,6 +89,12 @@
             <artifactId>jsoup</artifactId>
             <version>1.18.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
+        <dependency>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>jib-maven-plugin</artifactId>
+            <version>3.4.4</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.5</version>
+        <version>3.4.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>dev.skullition</groupId>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>io.github.JDA-Fork</groupId>
             <artifactId>JDA</artifactId>
-            <version>641d18d3b3</version>
+            <version>82d7ab90d6</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -79,9 +79,9 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/io.github.freya022/BotCommands -->
         <dependency>
-            <groupId>io.github.freya022</groupId>
+            <groupId>com.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>0e4c8a7ca71ab5366a1bd05d361ed43bd12a40db</version>
+            <version>5caf1bc6db70f2a7c34d4004eec17ff05ad76b1a</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>
@@ -89,10 +89,20 @@
             <artifactId>jsoup</artifactId>
             <version>1.18.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
+        <dependency>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>jib-maven-plugin</artifactId>
+            <version>3.4.4</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
     </dependencies>
